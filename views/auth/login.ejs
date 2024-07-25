@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    // Redirect away from the login page if user is already logged in
+    if (sessionStorage.getItem('isLoggedIn')) {
+        window.location.href = '/city'; // Redirect to city page
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <title>Login</title>
+  <link rel="icon" type="image/x-icon" href="/img/favi.png">
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .content {
+      flex: 1;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100">
+
+  <%- include('../component/navbar.ejs') %>
+
+  <div class="flex flex-col md:flex-row my-16 items-center justify-center content">
+    <div class="md:w-1/2 w-full flex flex-col items-center p-6">
+      <div class="text-4xl font-bold">LOGIN</div>
+      <div class="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
+        <form id="loginForm" action="/login" method="post" class="space-y-4">
+          <div>
+            <label class="block text-gray-700" for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="username" class="w-full p-2 border-2 border-yellow-400 rounded-full" required>
+          </div>
+          <div>
+            <label class="block text-gray-700" for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="password" class="w-full p-2 border-2 border-yellow-400 rounded-full" required>
+          </div>
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button id="signInButton" type="submit" class="w-full bg-yellow-400 text-white py-2 rounded-full mt-4 hover:bg-yellow-500 transition duration-300">SIGN IN</button>
+        </form>
+      </div>
+    </div>
+    <div class="md:w-1/2 w-full flex justify-center items-center p-6">
+      <img src="/img/bg-01.png" alt="รูปภาพ" class="w-full max-w-lg">
+    </div>
+  </div>
+
+  <%- include('../component/footer.ejs') %>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function() {
+      var signInButton = document.getElementById('signInButton');
+      signInButton.innerText = 'Signing in...';
+      signInButton.style.opacity = '0.2';
+
+      setTimeout(function() {
+        signInButton.innerText = 'SIGN IN';
+        signInButton.style.opacity = '1';
+      }, 400); // 400 milliseconds = 0.4 seconds
+    });
+  </script>
+</body>
+
+</html>

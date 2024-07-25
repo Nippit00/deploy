@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="../tracktag/img/favi.png">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-treemap"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
+
+  .font-th-sarabun {
+      font-family: 'Sarabun', sans-serif;
+  }
+  </style>
+</head>
+
+<body class="font-th-sarabun">
+
+  <div id="spinner-container" class="flex fixed inset-0 bg-white bg-opacity-90 z-50 flex-col justify-center items-center">
+    <img id="static-image" src="/img/favi.png" alt="Loading..." class="w-24 h-auto mb-5">
+    <div id="spinner" class="flex gap-2">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <%- include('../component/navbar.ejs') %>
+
+  <div class="w-full">
+    <img src="/img/banner.png" alt="Banner Image" class="w-full">
+  </div>
+
+  <div class="text-center py-5">
+    <h1 class="text-4xl">
+      ผลรายงานความคืบหน้า<span class="text-[#04b2a1]">เมืองที่ได้รับตราสัญลักษณ์</span>
+    </h1>
+  </div>
+
+  <%- include('../component/menu2.ejs') %>
+
+  
+  <div class="mt-5 border-2 border-inherit rounded-3xl w-dvh  md:w-3/5 mx-auto ">
+    <div class="border-b-2">
+      <div class="flex justify-between items-center bg-gradient-to-r from-gray-100 to-white rounded-t-3xl h-16">
+        <div class="text-xl mx-5"><%= data[0].cityName %></div>
+        <div ><img src="/img/navpic.png" alt="logo" class="w-72"></div>
+      </div>
+      <div class="flex justify-between h-16 items-center">
+        <div class="text-xl mx-5">วิสัยทัศน์:ยังไม่มี</div>
+        <div class="text-xl mx-5"> ประเภท: <%= new Date() - new Date(data.date) < 6 * 30 * 24 * 60 * 60 * 1000 ? 'เมืองใหม่' : 'เมืองเก่า' %></div>
+      </div>
+    </div>  
+        <!-- กราฟ  -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- บริการเมืองอัจฉริยะ -->
+          <% const initialRound=JSON.parse(rounded)[Object.keys(JSON.parse(rounded)).length]; %>
+          <div class="card col-span-1 lg:ml-3">
+              <h3 class="section-title">บริการเมืองอัจฉริยะ : <span style="color: #2c7f97;">
+                  <%= Object.keys(initialRound.smartkeycount).length-1 %>
+              </span>
+              Smarts <br />จำนวนโครงการ : <span style="color: #d0a519;">
+                  <%= initialRound.count-4 %>
+              </span> โครงการ</h3>
+              <div class="grid grid-cols-3 gap-2">
+                  <!-- Icon blocks looped through initialRound.smartkeycount -->
+                  <% Object.entries(initialRound.smartkeycount).forEach(([key, count]) => { if(key==="PIF"||key==="DIF"){}
+                  else{%>
+                  <div class="flex items-center justify-center space-x-2 flex-col border-[1px] rounded-md border-inherit border-solid py-2 <%= count ? '' : 'grayscale opacity-50' %>">
+                      <img src="/img/<%= key %>.png" alt="<%= key %> Image" style="width: 70px; height: 70px;">
+                      <span class="font-normal mt-2"><%= key %> (<%= count ?? '0' %>)</span>
+                  </div>
+                  <% }}) %>
+              </div>
+          </div>
+          <!-- กราฟ -->
+          <div class="card col-span-1 lg:col-span-2">
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <!-- ความคืบหน้าโครงการ -->
+                  <div class="text-center">
+                      <h3 class="section-title ">ความคืบหน้าของโครงการตามแผน</h3>
+                      <div class="chart-container">
+                          <canvas id="progressChart"></canvas>
+                      </div>
+                      <div class="chart-container">
+                          <canvas id="avgprogress"></canvas>
+                      </div>
+                  </div>
+                  <!-- ค่าเฉลี่ยความสำเร็จ -->
+                  <div class="text-center">
+                      <h3 class="section-title">ร้อยละความสำเร็จของแผน</h3>
+                      <div class="chart-container">
+                          <canvas id="successChart"></canvas>
+                      </div>
+                      <div class="chart-container">
+                          <canvas id="stackedBarChart"></canvas>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <!-- problem -->
+          <div class="col-span-1 lg:col-span-1">
+              <h3 class="section-title" style="text-align: center;">ปัญหาและอุปสรรค</h3>
+              <div class="chart-container w-full">
+                  <canvas id="problemsChart" class="w-full"></canvas>
+              </div>
+          </div>
+          <!-- โครงการที่สำเร็จ -->
+          <div class="col-span-1 lg:col-span-2 overflow-scroll h-52 border-2 border-sky-100 bg-sky-100 p-3 rounded-xl m-5">
+              <div class="section-title">โครงการที่สำเร็จ</div>
+              <ul class="list-disc pl-5 space-y-2">
+                  <% initialRound.complete.forEach(item => { %>
+                  <li><%= item %></li>
+                  <% }) %>
+              </ul>
+          </div>
+      </div>
+      
+        
+        
+       
+    
+  </div>
+
+  <div class="text-center mt-10 flex flex-col md:flex-row md:justify-center items-center hidden lg:flex lg:text-lg">
+    <div><span class="text-red-600 font-semibold">*** สถานะการรายงาน:</span></div> 
+    <div><span class="text-black"> <span class="inline-block w-4 h-4 rounded-full bg-red-500"></span></span>  ยังไม่รายงาน </div> 
+    <div><span class="text-black"> <span class="inline-block w-4 h-4 rounded-full bg-yellow-500"></span></span>  ฉบับร่าง </div> 
+    <div><span class="text-black"> <span class="inline-block w-4 h-4 rounded-full bg-green-500"></span></span>  รายงานแล้ว </div>
+    <div><span class="text-black"> <span class="inline-block w-4 h-4 rounded-full bg-gray-200 border-2 border-gray-500"></span></span>  ยังไม่ถึงรอบรายงาน </div>
+    <div class="hidden md:block"><span class="text-red-600 font-semibold">***</span></div>
+  </div>
+
+  <!-- Project Items Section -->
+  <div class="max-w-dvh mx-8 my-10 bg-gray-400 p-5 rounded-xl shadow-md border-2 border-teal-400 hidden lg:block">
+    <h6 class="text-white text-2xl font-bold text-center mb-5">สรุปสถานะรายงาน</h6>
+    <div class="grid grid-cols-2 sm:grid-cols-11 gap-4 items-center">
+      <% const projectItems = [
+          { id: 10, imgSrc: "/img/favi.png", alt: "Image 0", title: "โครงสร้างพื้นฐานกายภาพ" },
+          { id: 11, imgSrc: "/img/favi.png", alt: "Image 1", title: "โครงสร้างพื้นฐานดิจิตอล" },
+          { id: 1, imgSrc: "/img/cdp.png", alt: "Image 2", title: "CDP" },
+          { id: 2, imgSrc: "/img/ENV.png", alt: "Image 3", title: "Smart Environment" },
+          { id: 3, imgSrc: "/img/ENE.png", alt: "Image 4", title: "Smart Energy" },
+          { id: 4, imgSrc: "/img/ECO.png", alt: "Image 5", title: "Smart Economy" },
+          { id: 5, imgSrc: "/img/MOB.png", alt: "Image 6", title: "Smart Mobility" },
+          { id: 6, imgSrc: "/img/GOV.png", alt: "Image 7", title: "Smart Governance" },
+          { id: 7, imgSrc: "/img/PEO.png", alt: "Image 8", title: "Smart People" },
+          { id: 8, imgSrc: "/img/LIV.png", alt: "Image 9", title: "Smart Living" },
+          { id: 9, imgSrc: "/img/all01.png", alt: "Image 10", title: "All" }
+      ]; %>
+      
+      <% projectItems.forEach(item => { %>
+      <div class="flex flex-col items-center mb-4 cursor-pointer" onclick="show(<%= item.id %>)">
+          <img src="<%= item.imgSrc %>" alt="<%= item.alt %>" id="<%= item.id %>" class="w-20 h-20 border-2 border-teal-400 rounded-full p-2.5 bg-white shadow-lg transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl" />
+          <h5 class="mt-2 text-sm text-white font-semibold"><%= item.title %></h5>
+      </div>
+      <% }) %>
+  </div>
+  
+  <div>
+    <div class="w-full border-collapse bg-white shadow-lg text-center mt-5">
+      <div class="grid grid-cols-8 bg-teal-400 text-white">
+        <div class="p-2.5 col-span-4 ">Project</div>
+        <div class="p-2.5">ความสำเร็จ</div>
+        <div class="p-2.5">Percent ความคืบหน้า</div>
+        <div class="p-2.5"><span class="text-red">***</span>รอบติดตาม 12 เดือน<span class="text-red">***</span></div>
+        <div class="p-2.5">รอบติดตามความคืบหน้าเพื่อต่อตราสัญลักษณ์</div>
+      </div>
+      <div id="body-table">
+        
+        
+        
+    </div>
+    
+  </div>
+  </div>
+
+
+
+  </div>
+
+  <%- include('../component/footer.ejs') %>
+</body>
+<script>
+  window.onload = function () {
+    document.getElementById('spinner-container').style.display = 'none';
+  };
+
+  window.addEventListener('DOMContentLoaded', (event) => {
+    document.getElementById('spinner-container').style.display = 'flex';
+  });
+
+  const solutionInfo = <%- solutionInfo %>;
+  // console.log(solutionInfo)
+  const dataRound = <%- dataRound %>;
+  const reportOpenTime = new Date('<%- twoYearsLaterDate.toISOString() %>');
+  reportOpenTime.setHours(0, 0, 0, 0);
+  const currentime = new Date()
+
+  function calculateAverageSuccess(dataArray, smartKey) {
+    let totalSuccess = 0;
+    let count = 0;
+    dataArray.forEach((data) => {
+      if(smartKey==="ALL"){
+        totalSuccess += data.Progress === 100 ? 1 : 0;
+        count++;
+      }
+      else{
+        if (data.smartKey === smartKey) {
+          totalSuccess += data.Progress === 100 ? 1 : 0;
+          count++;
+      }
+      }
+
+      
+    });
+    return totalSuccess;
+  }
+
+  function calculateAverageProgress(dataArray, smartKey) {
+    let totalProgress = 0;
+    let count = 0;
+    dataArray.forEach((data) => {
+      if(smartKey==="ALL"){
+        totalProgress += data.Progress / 100;
+        count++;
+      }
+      else{ 
+        if (data.smartKey === smartKey) {
+          totalProgress += data.Progress / 100;
+          count++;
+      }
+    }
+     
+    });
+    return count > 0 ? totalProgress / count : 0;
+  }
+
+  function generateTableHTML(data, key) {
+  let html = "";
+  data.forEach((item) => {
+    if(key==='ALL'){
+     
+      const status = item.Progress === 100 ? "สำเร็จ" : "ไม่สำเร็จ";
+      let statusFormCircle = '';
+          if (currentime >= new Date(dataRound.open)) {
+            statusFormCircle = item.status === 2 || item.status === 3
+              ? `<div style="width: 20px; height: 20px; border-radius: 50%; background-color: green; display: inline-block;"></div>` 
+              : item.status === 1 
+                ? `<div style="width: 20px; height: 20px; border-radius: 50%; background-color: orange; display: inline-block;"></div>` 
+                : `<div style="width: 20px; height: 20px; border-radius: 50%; background-color: red; display: inline-block;"></div>`;
+          }else{
+            statusFormCircle=`<div class="w-5 h-5 rounded-full bg-gray-200 border-2 border-gray-500 inline-block"></div>`;
+          }
+          let statusReportCircle = '';
+          if (currentime >= reportOpenTime) {
+            statusReportCircle = item.status === 2 || item.status === 3
+              ? `<div style="width: 20px; height: 20px; border-radius: 50%; background-color: green; display: inline-block;"></div>` 
+              : item.status === 1 
+                ? `<div style="width: 20px; height: 20px; border-radius: 50%; background-color: orange; display: inline-block;"></div>` 
+                : `<div style="width: 20px; height: 20px; border-radius: 50%; background-color: red; display: inline-block;"></div>`;
+          } else {
+            statusReportCircle = `<div class="w-5 h-5 rounded-full bg-gray-200 border-2 border-gray-500 inline-block"></div>`;
+          }
+          
+      html += `
+        <div class="grid grid-cols-8 hover:bg-gray-100 ">
+          <div class="p-5 border-b-2 col-span-4 text-left truncate">${item.solutionID.slice(4)} ${item.solutionName}</div>
+          <div class="p-5 border-b-2">${status}</div>
+          <div class="p-5 border-b-2">${item.Progress}%</div>
+          <div class="p-5 border-b-2 ">${statusFormCircle}</div>
+          <div class="p-5 border-b-2">${statusReportCircle}</div>
+        </div>`;
+    
+    }
+    else{
+    if (item.smartKey === key) {
+      const status = item.Progress === 100 ? "สำเร็จ" : "ไม่สำเร็จ";
+      let statusFormCircle = '';
+          if (currentime >= new Date(dataRound.open)) {
+            statusFormCircle = item.status === 2 || item.status === 3
+              ? `<div style="width: 20px; height: 20px; border-radius: 50%; background-color: green; display: inline-block;"></div>` 
+              : item.status === 1 
+                ? `<div style="width: 20px; height: 20px; border-radius: 50%; background-color: orange; display: inline-block;"></div>` 
+                : `<div style="width: 20px; height: 20px; border-radius: 50%; background-color: red; display: inline-block;"></div>`;
+          }else{
+            statusFormCircle=`<div class="w-5 h-5 rounded-full bg-gray-200 border-2 border-gray-500 inline-block"></div>`;
+          }
+          let statusReportCircle = '';
+          if (currentime >= reportOpenTime) {
+            statusReportCircle = item.status === 2 || item.status === 3
+              ? `<div style="width: 20px; height: 20px; border-radius: 50%; background-color: green; display: inline-block;"></div>` 
+              : item.status === 1 
+                ? `<div style="width: 20px; height: 20px; border-radius: 50%; background-color: orange; display: inline-block;"></div>` 
+                : `<div style="width: 20px; height: 20px; border-radius: 50%; background-color: red; display: inline-block;"></div>`;
+          } else {
+            statusReportCircle = `<div class="w-5 h-5 rounded-full bg-gray-200 border-2 border-gray-500 inline-block"></div>`;
+          }
+          
+      html += `
+        <div class="grid grid-cols-8 hover:bg-gray-100 ">
+          <div class="p-5 border-b-2 col-span-4 text-left truncate">${item.solutionID.slice(4)} ${item.solutionName}</div>
+          <div class="p-5 border-b-2">${status}</div>
+          <div class="p-5 border-b-2">${item.Progress}%</div>
+          <div class="p-5 border-b-2 ">${statusFormCircle}</div>
+          <div class="p-5 border-b-2">${statusReportCircle}</div>
+        </div>`;
+    }
+  }
+  });
+  const averageProgress = calculateAverageProgress(data, key);
+  const averageSuccess = calculateAverageSuccess(data, key);
+  html += `
+    <div class="grid grid-cols-8 hover:bg-gray-100">
+      <div class="p-5 border-b-2 col-span-4">รวม</div>
+      <div class="p-5 border-b-2">${averageSuccess }</div>
+      <div class="p-5 border-b-2">${(averageProgress * 100).toFixed(0)}%</div>
+      <div class="p-5 border-b-2"></div>
+      <div class="p-5 border-b-2"></div>
+    </div>`;
+  return html;
+}
+
+
+  function show(index) {
+    const bodyTable = document.getElementById("body-table");
+    let key = "";
+    const images = document.querySelectorAll('img');
+    images.forEach(img => {
+      img.classList.remove('active');
+    });
+    const clickedImage = document.getElementById(index.toString());
+    clickedImage.classList.add('active');
+    switch (index) {
+      case 1: key = "CDP"; break;
+      case 2: key = "ENV"; break;
+      case 3: key = "ENE"; break;
+      case 4: key = "ECO"; break;
+      case 5: key = "MOB"; break;
+      case 6: key = "GOV"; break;
+      case 7: key = "PEO"; break;
+      case 8: key = "LIV"; break;
+      case 9: key = "ALL"; break;
+      case 10: key = "PIF"; break;
+      case 11: key = "DIF"; break;
+      default: key = ""; break;
+    }
+
+    bodyTable.innerHTML = generateTableHTML(solutionInfo, key);
+  }
+
+  // Add the CSS class for the active state
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .active {
+      transform: scale(1.35);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      border-color: rgb(255, 198, 0);
+      
+    }
+  `;
+  document.head.appendChild(style);
+  
+  window.addEventListener('DOMContentLoaded', (event) => {
+   show(10)
+  });
+</script>
+
+<script>
+const progressCtx = document.getElementById('progressChart').getContext('2d');
+const rounded = <%- rounded %>;
+let currentRound = Object.keys(rounded).length;
+
+let initialRound = rounded[currentRound];
+
+
+const progressChart = new Chart(progressCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['ยังไม่ดำเนินการ', 'ดำเนินการแล้ว'],
+    datasets: [{
+      data: [100 - initialRound.progress, initialRound.progress],
+      backgroundColor: ['#eeeeee', '#36BA98'],
+      borderWidth: 6,
+      borderColor: '#ffffff'
+    }]
+  },
+  options: {
+    plugins: {
+      datalabels: {
+        formatter: (value, context) => context.dataIndex === 1 ? `${value}%` : '',
+        color: '#fff',
+        font: {
+          weight: 'bold',
+          size: 16,
+          family: "'Sarabun', sans-serif"
+        },
+        align: 'center',
+        anchor: 'center'
+      },
+      tooltip: {
+        callbacks: {
+          label: tooltipItem => `${tooltipItem.label}: ${tooltipItem.raw}%`
+        }
+      }
+    },
+    centerText: {
+      display: true,
+      text: `${initialRound.progress}%`
+    },
+    cutout: '50%',
+    maintainAspectRatio: false,
+  },
+  plugins: [{
+    id: 'centerText',
+    beforeDraw: chart => {
+      if (chart.options.centerText.display) {
+        const ctx = chart.ctx;
+        const centerConfig = chart.options.centerText;
+        const fontSize = (chart.height / 180).toFixed(2);
+        ctx.font = `bold ${fontSize}em sans-serif`;
+        ctx.textBaseline = 'middle';
+        const text = centerConfig.text;
+        const textX = Math.round((chart.width - ctx.measureText(text).width) / 2);
+        const textY = chart.height / 2;
+        ctx.fillStyle = '#000';
+        ctx.fillText(text, textX, textY);
+      }
+    }
+  }]
+});
+
+
+// กราฟค่าเฉลี่ยความสำเร็จ
+const successCtx = document.getElementById('successChart').getContext('2d');
+const totalProjects = initialRound.count;
+const successProjects = initialRound.success.reduce((a, b) => a + b, 0);
+const unsuccessfulProjects = totalProjects - successProjects;
+
+
+const successChart = new Chart(successCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['ยังไม่สำเร็จ', 'สำเร็จแล้ว'],
+    datasets: [{
+      data: [(unsuccessfulProjects / totalProjects) * 100, (successProjects / totalProjects) * 100],
+      backgroundColor: ['#eeeeee', '#37B7C3'],
+      borderWidth: 6,
+      borderColor: '#ffffff'
+    }]
+  },
+  options: {
+    plugins: {
+      datalabels: {
+        formatter: (value) => `${value.toFixed(0)}%`,
+        color: '#fff',
+        font: {
+          weight: 'bold',
+          family: "'Sarabun', sans-serif"
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: (tooltipItem) => `${tooltipItem.label}: ${tooltipItem.raw.toFixed(0)}%`
+        }
+      }
+    },
+    cutout: '50%',
+    maintainAspectRatio: false,
+    centerText: {
+      display: true,
+      text: `${((successProjects / totalProjects) * 100).toFixed(0)}%`
+    }
+  },
+  plugins: [{
+    id: 'centerText',
+    beforeDraw: (chart) => {
+      if (chart.options.centerText.display) {
+        const ctx = chart.ctx;
+        const centerConfig = chart.options.centerText;
+        const fontSize = (chart.height / 180).toFixed(2);
+        ctx.font = `bold ${fontSize}em sans-serif`;
+        ctx.textBaseline = 'middle';
+        const text = centerConfig.text;
+        const textX = Math.round((chart.width - ctx.measureText(text).width) / 2);
+        const textY = chart.height / 2;
+        ctx.fillStyle = '#000';
+        ctx.fillText(text, textX, textY);
+      }
+    }
+  }]
+});
+
+
+const problemsCtx = document.getElementById('problemsChart').getContext('2d');
+const problemData = initialRound.problem;
+
+const problemsChart = new Chart(problemsCtx, {
+type: 'bar',
+data: {
+  labels: problemData.map(p => p.problem),
+  datasets: [{
+    label: '% ของปัญหา',
+    data: problemData.map(problem => problem.percentage),
+    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+  }]
+},
+options: {
+  indexAxis: 'y', // This makes the bar chart horizontal
+  plugins: {
+    legend: {
+      display: false // This will hide the legend
+    },
+    datalabels: {
+      display: false // This will hide the data labels
+    }
+  },
+  scales: {
+    x: {
+      beginAtZero: true,
+      max: 100,
+      ticks: {
+        callback: (value) => `${value}%`
+      }
+    }
+  }
+}
+});
+
+
+
+const stackedBarCtx = document.getElementById('stackedBarChart').getContext('2d');
+const stackedBarChart = new Chart(stackedBarCtx, {
+  type: 'bar',
+  data: {
+    labels: Object.keys(initialRound.smartkeycount),
+    datasets: [{
+      label: 'โครงการที่สำเร็จแล้ว ',
+      data: Object.values(initialRound.success),
+      backgroundColor: '#37B7C3'
+    },
+    {
+      label: 'โครงการที่ยังไม่สำเร็จ',
+      data: Object.values(initialRound.unsuccess),
+      backgroundColor: '#cccccc'
+    }
+    ]
+  },
+  options: {
+    scales: {
+      x: {
+        stacked: true
+      },
+      y: {
+        stacked: true,
+        beginAtZero: true
+      }
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom'
+      },
+      tooltip: {
+        callbacks: {
+          label: tooltipItem => `${tooltipItem.dataset.label}: ${tooltipItem.raw}`
+        }
+      },
+      datalabels: {
+        display: true,
+        color: '#000',
+        font: {
+          weight: 'bold',
+          family: "'Sarabun', sans-serif"
+        },
+        formatter: (value, context) => value === 0 ? null : value
+      }
+    }
+  },
+  plugins: [ChartDataLabels]
+});
+
+
+const avgProgressCtx = document.getElementById('avgprogress').getContext('2d');
+
+const entries = Object.entries(initialRound.averageProgressPerSmart);
+
+// จัดเรียงอาร์เรย์ตามค่า value
+const sortedEntries = entries.sort((a, b) => b[1] - a[1]);
+
+// แปลงอาร์เรย์ที่จัดเรียงแล้วกลับเป็นวัตถุ (ถ้าต้องการ)
+const sortedObject = Object.fromEntries(sortedEntries);
+
+const labels = Object.keys(sortedObject);
+const data = Object.values(sortedObject);
+const treemapData = labels.map((label, index) => (
+{
+v: data[index],
+label: label,
+
+}));
+
+function colorFromValue(value, border) {
+      var alpha = value / 100;
+      var color = "#36BA98";
+      if (border) {
+          alpha += 0.1;
+        }
+      return Chart.helpers.color(color)
+          .alpha(alpha)
+          .rgbString();
+  }
+
+
+const avgProgressChart = new Chart(avgProgressCtx, {
+type: 'treemap',
+data: {
+  datasets: [
+    {
+      label: "ความคืบหน้าโครงการตามแผน",
+      data: data,
+      backgroundColor: function (ctx) {
+                      return colorFromValue(ctx.dataset.data[ctx.dataIndex].v);
+                  },
+      borderColor: function (ctx) {
+                      return colorFromValue(ctx.dataset.data[ctx.dataIndex].v, true);
+                  },
+      borderWidth: 2,
+      spacing: 0.1,
+    },
+  ],
+},
+options: {
+  plugins: {
+    datalabels: {
+      formatter: (value, context) => labels[context.dataIndex],
+      color: '#000',
+      align: 'center',
+      anchor: 'center',
+      font: {
+        weight: 'bold',
+        size: 14,
+        family: "'Sarabun', sans-serif"
+      },
+    },
+    tooltip: {
+      callbacks: {
+        label: (context) => `ค่าเฉลี่ยความสำเร็จ: ${context.raw.v}%`,
+      },
+    },
+  },
+  maintainAspectRatio: false,
+  title: {
+    display: true,
+    text: 'Basic Treemap Sample',
+  },
+  legend: {
+    display: false,
+  },
+},
+plugins: [ChartDataLabels],
+});
+
+</script>
+
+</html>

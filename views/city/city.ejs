@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
+
+        .font-th-sarabun {
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        #spinner-container {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 9999;
+            overflow: hidden;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #static-image {
+            width: 300px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        #spinner {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 16px;
+            height: 16px;
+            background-color: #3498db;
+            border-radius: 50%;
+            animation: blink 1.4s infinite both;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes blink {
+            0%,
+            80%,
+            100% {
+                opacity: 0;
+            }
+
+            40% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body class="font-th-sarabun">
+    <div id="spinner-container">
+        <img id="static-image" src="/img/favi.png" alt="Loading...">
+        <div id="spinner">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+    <%- include('../component/navbar.ejs') %>
+    <div class="flex flex-col ">
+        
+            
+       
+        <div class="relative">
+            <img src="/img/banner.png" alt="Banner Image" class="w-full">
+        
+            <div class="absolute top-0 right-0 mt-4 mr-4">
+                <div id="alert" class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md" role="alert">
+                    <div class="flex">
+                        <div class="py-1">
+                            <svg class="fill-current h-6 w-6 text-teal-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-bold">Our privacy policy has changed</p>
+                            <p class="text-sm">Make sure you know how these changes affect you.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-4xl flex font-normal justify-center py-5 flex-wrap">
+            <p>แผน </p>
+            <p class="text-[#C2AF76]"> Smart City </p>
+        </div>
+        <div class="my-3">
+            <%- include('../component/menu1.ejs') %>
+        </div>
+        <div class="flex flex-col lg:flex-row justify-around mt-10 mx-auto ">
+            <div class="w-full  lg:w-1/2 p-5 lg:p-20 ">
+             
+                <div class="my-3  ">
+                    <span class="text-lg text-gray-700 font-medium">ชื่อแผนเมืองอัจฉริยะ: </span>
+                    <span class="text-teal-600">
+                        <%= cityInfo.cityName %>
+                    </span>
+                </div>
+                <div class="my-3">
+                    <span class="text-lg text-gray-700 font-medium">วิศัยทัศน์ :</span>
+                    <span class="text-teal-600">
+                        <%= cityInfo.Vision %>
+                    </span>
+                </div>
+                <div class="my-3">
+                    <span class="text-lg text-gray-700 font-medium">ประเภทพื้นที่ :</span>
+                    <span class="text-teal-600">
+                        <%= cityInfo.CoverageArea %>
+                    </span>
+                </div>
+                <div class="my-3 ">
+                    <span class="text-lg text-gray-700 font-medium">จังหวัด:</span>
+                    <span class="text-teal-600">
+                        <%= cityInfo.province %>
+                    </span>
+                </div>
+                <div class="my-3">
+                    <span class="text-lg text-gray-700 font-medium">ผู้พัฒนาเมืองอัจฉริยะ :</span>
+                    <span class="text-teal-600">
+                        <%= cityInfo.developer %>
+                    </span>
+                </div>
+                <div class="my-3">
+                    <span class="text-lg text-gray-700 font-medium">ประกาศเมืองอัจฉริยะ :</span>
+                    <span class="text-teal-600">
+                        <% const date = new Date(cityInfo.date); 
+                            const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear().toString().padStart(4, '0')}`; %>
+                        <%= formattedDate %>
+                    </span>
+                </div>
+                <div class="my-3">
+                    <span class="text-lg text-gray-700 font-medium">อายุของเมือง :</span>
+                    <span class="text-teal-600">
+                        <%= announcementDuration.years %> ปี
+                        <%= announcementDuration.months %> เดือน
+                        <%= announcementDuration.days %> วัน
+                        (<%= announcementDuration.totalDays %> วัน)
+                    </span>
+                </div>
+                <div class="my-3">
+                    <span class="text-lg text-gray-700 font-medium">วันครบรอบ 2 ปี :</span>
+                    <span class="text-teal-600">
+                        <%= announcementDuration.twoYearsLaterFormatted %>
+                    </span>
+                </div>
+               
+                <div class="my-3">
+                    <span class="text-lg text-gray-700 font-medium">มูลค่าการลงทุน :</span>
+                    <span class="text-teal-600">
+                        <%= (cityInfo.government_investment + cityInfo.private_investment).toLocaleString() %> บาท
+                    </span>
+                </div>
+                <div class="my-3">
+                    <span class="text-lg text-gray-700 font-medium">มูลค่าการลงทุนภาครัฐ :</span>
+                    <span class="text-teal-600">
+                        <%= cityInfo.government_investment.toLocaleString() %> บาท
+                    </span>
+                </div>
+                <% if (cityInfo.private_investment) { %>
+                <div class="my-3">
+                    <span class="text-lg text-gray-700 font-medium">มูลค่าการลงทุนภาคเอกชน :</span>
+                    <span class="text-teal-600">
+                        <%= cityInfo.private_investment.toLocaleString() %> บาท
+                    </span>
+                </div>
+                <% } %>
+                <div class="my-3">
+                    <% if (1) { %>
+                    <% if (province.length > 0) { %>
+                    <div class="flex items-start">
+                        <div class="text-lg text-gray-700 font-medium">Smart Cityในจังหวัด : </div>
+                        <div class="text-lg">
+                            <% province.forEach(item => { %>
+                            <div>
+                                <div class="text-teal-600">
+                                    <span><%= item.cityName %>,</span>
+                                </div>
+                            </div>
+                            <% }) %>
+                        </div>
+                    </div>
+                    <% } %>
+                    <% } %>
+                </div>
+            </div>
+            <div class="w-full lg:w-1/2 p-5 lg:p-20">
+                
+                <div class="map-container">
+                    <img src="/cityPic/<%= cityInfo.cityID %>.png" id="mapImage" class="w-full lg:h-96">
+                </div>
+            </div>
+        </div>
+        <div class="mx-5 scale-100 lg:scale-75">
+            <div class="text-3xl text-center"><span>7 smart :</span><span style="color: #04B2A1;">
+                    <%= Object.values(smartKeyCounts).reduce((acc, value) => acc + value, 0 - 4) %>โครงการ
+                </span>
+            </div>
+            <div class="flex flex-wrap justify-around p-6 rounded-xl border-[#00B2A9] border-4 mt-5  ">
+                <div class="flex flex-col items-center m-4">
+                    <img src="/img/ENV.png" alt="Image 1" class="w-20 h-20">
+                    <div class="text-center text-lg">Smart Environment</div>
+                    <div class="mt-2 text-lg border-2  p-2 rounded-lg">
+                        <%= smartKeyCounts.ENV %> โครงการ
+                    </div>
+                </div>
+                <div class="flex flex-col items-center m-4">
+                    <img src="/img/ENE.png" alt="Image 2" class="w-20 h-20">
+                    <div class="text-center text-lg">Smart Energy</div>
+
+                    <div class="mt-2 text-lg border-2  p-2 rounded-lg" >
+                        <%= smartKeyCounts.ENE %> โครงการ
+                    </div>
+                </div>
+                <div class="flex flex-col items-center m-4">
+                    
+                    <img src="/img/ECO.png" alt="Image 3" class="w-20 h-20">
+                    <div class="text-center text-lg">Smart Economy</div>
+                    <div class="mt-2 text-lg border-2  p-2 rounded-lg">
+                        <%= smartKeyCounts.ECO %> โครงการ
+                    </div>
+                </div>
+                <div class="flex flex-col items-center m-4">
+                    <img src="/img/MOB.png" alt="Image 4" class="w-20 h-20">
+                    <div class="text-center text-lg ">Smart Mobility</div>
+
+                    <div class="mt-2 text-lg border-2  p-2 rounded-lg">
+                        <%= smartKeyCounts.MOB %> โครงการ
+                    </div>
+                </div>
+                <div class="flex flex-col items-center m-4">
+                    <img src="/img/GOV.png" alt="Image 5" class="w-20 h-20">
+                    <div class="text-center text-lg">Smart Governance</div>
+
+                    <div class="mt-2 text-lg border-2  p-2 rounded-lg">
+                        <%= smartKeyCounts.GOV %> โครงการ
+                    </div>
+                </div>
+                <div class="flex flex-col items-center m-4">
+                    <img src="/img/PEO.png" alt="Image 6" class="w-20 h-20">
+                    <div class="text-center text-lg">Smart People</div>
+
+                    <div class="mt-2 text-lg border-2  p-2 rounded-lg">
+                        <%= smartKeyCounts.PEO %> โครงการ
+                    </div>
+                </div>
+                <div class="flex flex-col items-center m-4">
+                    <img src="/img/LIV.png" alt="Image 7" class="w-20 h-20">
+                    <div class="text-center text-lg">Smart Living</div>
+
+                    <div class="mt-2 text-lg border-2 p-2 rounded-lg">
+                        <%= smartKeyCounts.LIV %> โครงการ
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ml-3 mb-10 mt-3 md:mt-0 md:ml-52 self-start mr-8">
+            <div class="text-xl mb-2"><span>เอกสารรายละเอียดของแผนเมือง :</span></div>
+            <% datafile.forEach(data => { %>
+            <% if (data.fileID === "F1") { %>
+            <div class="mb-2"><a class="flex" href="<%= data.link %>" target="_blank" >1.ข้อสรุปผู้บริหาร<svg class="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#00b2a9" d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg></a></div>
+            <% } else if (data.fileID === "F2") { %>
+            <div class="mb-2" > <a class="flex" href="<%= data.link %>" target="_blank" >2.ข้อเสนอแผนเมืองอัจฉริยะที่ยื่นเสนอ<svg class="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#00b2a9" d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg></a></div>
+            <% } else if (data.fileID === "F3") { %>
+                <div class="mb-2"> <a class="flex"  href="<%= data.link %>" target="_blank" >3.ประกาศจากคณะกรรมการชาติในการได้รับตราสัญลักษณ์เมืองอัจฉริยะ<svg class="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#00b2a9" d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg></a></div>
+            <% } else { %>
+                <div class="mb-2"> 
+                    <a class="flex" href="<%= data.link %>" target="_blank">
+                        4.อื่นๆ
+                        <svg  class="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#00b2a9" d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg>
+                    
+                     </a>
+                </div>
+            <% } %>
+            <% }) %>
+        </div>
+        <div>
+            <%- include('../component/footer.ejs') %>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(function() {
+            document.getElementById('alert').style.display = 'none';
+        }, 100000); // 10000 milliseconds = 10 seconds
+        window.onload = function () {
+            document.getElementById('spinner-container').style.display = 'none';
+        };
+
+        window.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('spinner-container').style.display = 'flex';
+        });
+        function toggleReadMore() {
+            const readMoreText = document.querySelector('.read-more-text');
+            const readMoreBtn = document.querySelector('.read-more-btn');
+            if (readMoreText.style.display === 'none') {
+                readMoreText.style.display = 'inline';
+                readMoreBtn.textContent = 'อ่านน้อยลง';
+            } else {
+                readMoreText.style.display = 'none';
+                readMoreBtn.textContent = 'อ่านเพิ่มเติม';
+            }
+        }
+
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const twoYearsLaterFormatted = '<%= announcementDuration.twoYearsLaterFormatted %>'; // เวลาที่ต้องการคำนวณถึงดึงมากจาก database
+            const announcementDuration = <%- JSON.stringify(announcementDuration) %>;
+            const round = <%- dataRound %>;
+            const formDates = <%- JSON.stringify(formDates) %>; //เเปลงข้อมูล formDates จาก database เป็น Json
+            const [day, month, year] = twoYearsLaterFormatted.split('/').map(Number); //ตัด / ออกเเล้วเเปลงวันเป็นตัวเลข
+            const currentDate = new Date(); // สร้างเวลาเวลาปัจจุบัน
+            let currentDay = currentDate.getDate(); //วันปัจจุบัน
+            let currentMonth = currentDate.getMonth() + 1; //เดือนปัจจุบัน
+            let currentYear = currentDate.getFullYear(); //ปีปัจจุบัน
+
+            let formStartDay = formDates.formStartDay;
+            let formEndDay = formDates.formEndDay;
+            let formStartMonth = formDates.formStartMonth;
+            let formEndMonth = formDates.formEndMonth;
+            let formStartYear = formDates.formStartYear;
+            let formEndYear = formDates.formEndYear;
+
+            const openForm = new Date(formStartYear-543, formStartMonth-1, formStartDay);
+            const closeForm = new Date(formEndYear-543, formEndMonth-1, formEndDay);
+            const fifteenDaysBeforeClose = new Date(closeForm);
+            fifteenDaysBeforeClose.setDate(closeForm.getDate() - 15);
+            console.log(fifteenDaysBeforeClose)
+            
+
+            // ตั้งเวลาให้เป็น 00:00:00
+            currentDate.setHours(0, 0, 0, 0);
+            openForm.setHours(0, 0, 0, 0);
+            closeForm.setHours(23, 59, 59, 999);
+
+            let reportStartDay = day;
+            let reportEndDay = day; // Assuming the end day is the same as the start day
+            let reportStartMonth = month;
+            let reportEndMonth = month; // Assuming the end month is the same as the start month
+            let reportYear = year;
+            const openAnvTwoYear = new Date(year, month-1, day);
+            openAnvTwoYear.setHours(0, 0, 0, 0);
+
+
+            let message = '';
+            //ถ้าตัวเเปรไหนมีค่าเป็น 0 ไม่ต้องเเสดง
+            const yearsText = formDates.remainingYears - 543 > 0 ? `${formDates.remainingYears - 543} ปี ` : '';
+            const monthsText = formDates.remainingMonths > 0 ? `${formDates.remainingMonths} เดือน ` : '';
+            const daysText = formDates.remainingDays > 0 ? `${formDates.remainingDays} วัน ` : '';
+
+            const yearsTextStart = formDates.remainingYearStart - 543 > 0 ? `${formDates.remainingYearStart - 543} ปี ` : '';
+            const monthsTextStart = formDates.remainingMonthStart > 0 ? `${formDates.remainingMonthStart} เดือน ` : '';
+            const daysTextStart = formDates.remainingDayStart > 0 ? `${formDates.remainingDayStart} วัน ` : '';
+
+            const yearsTextReport = announcementDuration.anvYears  > 0 ? `${announcementDuration.anvYears } ปี ` : '';
+            const monthsTextReport = announcementDuration.anvMonths > 0 ? `${announcementDuration.anvMonths} เดือน ` : '';
+            const daysTextReport = announcementDuration.anvDays > 0 ? `${announcementDuration.anvDays} วัน ` : '';
+            //เช็คว่าถึงเวลาเปิด form หรือยัง
+            if(currentDate >= openForm && currentDate <= closeForm)  {
+                    if(yearsText == 0 && monthsText == 0 && daysText == 0){
+                        message = `<div class="bg-red-100 px-2 pt-2  rounded-md">
+                            <div class="p-1"><span class="highlight"><i class="fas fa-bullhorn" style="color: red;"></i></span>  รอบการรายงาน : ครั้งที่ ${round.round}  <span class="highlight"><i class="fas fa-bullhorn" style="color: red;"></i></span> </div>
+                            <div class="p-1"> <span class="highlight"><i class="fas fa-exclamation-triangle"></i></span> ช่วงเวลาการรายงาน : ภายใน วันที่ ${formEndDay} ${formDates.formEndMonthThai} ${formEndYear} <span class="highlight"><i class="fas fa-exclamation-triangle"></i></span><span class="highlight">เหลือเวลากรอกฟอร์มอีก (วันนี้ วันสุดท้าย)</span></div>
+                            <div class="p-1">
+                                <span class="read-more-text" style="display: inline;">
+                                    <ul>
+                                        <li class="highlight mt-1">วิธีการรายงาน :</li>
+                                        <li class="text-left p-1">ขั้นที่ 1 :รายการความคืบหน้ารายโครงการ</li>
+                                        <li class="text-left p-1">ขั้นที่ 2 :"หมวดของ smart" ที่ต้องการรายงาน</li>
+                                        <li class="text-left p-1">ขั้นที่ 3 :เลือก "โครงการ" ที่ต้องการรายงาน</li>
+                                        <li class="text-left p-1">ขั้นที่ 4 :กด "บันทึก" ทุกครั้งที่รายงาน เพื่อให้ท่านสามารถกลับมารายงานต่อได้ในภายใน</li>
+                                        <li class="text-left p-1">ขั้นที่ 5 :กด "ส่ง" เมื่อรายงานครบถ้วนเเละต้องการส่งรายงาน</li>
+                                    </ul>
+                                    <ul>
+                                        <li class="highlight">คำเตือน :</li>
+                                        <li class="text-left p-1">กดปุ่ม "บันทึก" ทุกครั้งที่ กรอกข้อมูล ระบบจะบันทึกข้อมูลให้</li>
+                                        <li class="text-left p-1">กดปุ่ม "ส่งรายงาน" เมื่อต้องการส่งรายงาน ท่านจะไม่สามารถเเก้ไขข้อมูลได้</li>
+                                    </ul>
+                                </span>
+                                
+                            </div>
+        
+                        </div>`;
+
+                    }else{
+                        message = `<div class="bg-red-100 px-2 pt-2  rounded-md">
+                            <div class="p-1"><span class="highlight"><i class="fas fa-bullhorn" style="color: red;"></i></span>  รอบการรายงาน : ครั้งที่ ${round.round}  <span class="highlight"><i class="fas fa-bullhorn" style="color: red;"></i></span> </div>
+                            <div class="p-1"> <span class="highlight"><i class="fas fa-exclamation-triangle"></i></span> ช่วงเวลาการรายงาน : ภายใน วันที่ ${formEndDay} ${formDates.formEndMonthThai} ${formEndYear} <span class="highlight"><i class="fas fa-exclamation-triangle"></i></span><span class="highlight">เหลือเวลากรอกฟอร์มอีก (${yearsText}${monthsText}${daysText.trim()})</span></div>
+                            <div class="p-1">
+                                <span class="read-more-text" style="display: inline;">
+                                    <ul>
+                                        <li class="highlight mt-1">วิธีการรายงาน </li>
+                                        <li class="text-left p-1">ขั้นที่ 1 :รายการความคืบหน้ารายโครงการ</li>
+                                        <li class="text-left p-1">ขั้นที่ 2 :"หมวดของ smart" ที่ต้องการรายงาน</li>
+                                        <li class="text-left p-1">ขั้นที่ 3 :เลือก "โครงการ" ที่ต้องการรายงาน</li>
+                                        <li class="text-left p-1">ขั้นที่ 4 :กด "บันทึก" ทุกครั้งที่รายงาน เพื่อให้ท่านสามารถกลับมารายงานต่อได้ในภายใน</li>
+                                        <li class="text-left p-1">ขั้นที่ 5 :กด "ส่งรายงาน" เมื่อรายงานครบถ้วนเเละต้องการส่งรายงาน</li>
+                                    </ul>
+                                    <ul>
+                                        <li class="highlight">คำเตือน :</li>
+                                        <li class="text-left p-1">กดปุ่ม "บันทึก" ทุกครั้งที่ กรอกข้อมูล ระบบจะบันทึกข้อมูลให้</li>
+                                        <li class="text-left p-1">กดปุ่ม "ส่ง" เมื่อต้องการส่งรายงาน ท่านจะไม่สามารถเเก้ไขข้อมูลได้</li>
+                                    </ul>
+                                </span>
+                                
+                            </div>
+        
+                        </div>`;
+                    }
+                        
+            } else if(currentDate < openForm){
+                if(formStartYear === formEndYear){ //ถ้าอยู่ในปีเดียวกัน
+                    message = `<div>รอบการรายงาน : ครั้งที่${round.round} </div>
+                            <div class="p-1">ภายในวันที่ ${formStartDay} ${formDates.formStartMonthThai} ถึง ${formEndDay} ${formDates.formEndMonthThai} ${formStartYear}</div>
+                            <div class="mb-10 p-1"><span class="highlight">เเบบฟอร์มจะเปิดให้กรอกในอีก (${yearsTextStart}${monthsTextStart}${daysTextStart.trim()})</span></div>`;
+                            
+
+                }else{
+                    message = `<div>รอบการรายงาน : ครั้งที่ ${round.round} </div>
+                            <div class="p-1">ภายในวันที่ ${announcementDuration.dateOpen} ถึง ${announcementDuration.dateClose}</div>
+                            <div class="mb-10 p-1"><span class="highlight">เเบบฟอร์มจะเปิดให้กรอกในอีก (${yearsTextStart}${monthsTextStart}${daysTextStart.trim()})</span></div>`;
+                }
+            }else{
+                if(formStartYear === formEndYear){ //ถ้าอยู่ในปีเดียวกัน
+                    message = `<div>รอบการรายงาน : ครั้งที่ ${round.round} </div>
+                            <div class="mb-10 p-1">ภายในวันที่ ${formStartDay} ${formDates.formStartMonthThai} ถึง ${formEndDay} ${formDates.formEndMonthThai} ${formStartYear}</div>`;
+                            
+
+                }else{
+                    message = `<div>รอบการรายงาน : ครั้งที่ ${round.round} </div>
+                            <div class="mb-10 p-1">ภายในวันที่ ${announcementDuration.dateOpen} ถึง ${announcementDuration.dateClose}</div>`;
+                }
+            }
+
+
+
+
+            if (currentDate >= openAnvTwoYear) {
+                message += `<div class="bg-red-100 px-2 pt-2  rounded-md p-1 mt-10">
+                        <div class="p-1"><span class="highlight">*** </span>ถึงวันครบรอบเมืองเเล้ว <span class="highlight">*** </span></div>
+                        <div><span class="highlight">*** </span>กรุณาอัพโหลดไฟล์รายงานครบ 2 ปี <span class="highlight">*** </span></div>
+                        <div class="p-1">โดยเข้าไปอัพโหลดไฟล์รายงานได้ที่เมนู </div>
+                        <div class="p-1">-ไฟล์รายงานครบ 2 ปี</div>
+                        </div>`;
+            } else {
+                message += `<div class="mt-10">จะครบรอบ 2 ปี คุณต้องอัพโหลดไฟล์รายงาน</div>
+                            <div>ภายในวันที่ ${announcementDuration.twoYearsLaterFormatThai} <span class="highlight">
+                            <span class="highlight">เหลืออีก (${yearsTextReport}${monthsTextReport}${daysTextReport.trim()})</span></div> `;
+            }
+
+            Swal.fire({
+                title: 'การรายงานผลความคืบหน้า',
+                html: '<style>.highlight { color: red; }</style>' +
+                    message,
+                imageUrl: "/img/favi.png",
+                imageWidth: 200,
+                imageHeight: 200,
+                imageAlt: "Custom image",
+                confirmButtonText: 'OK',
+                customClass: {
+                    container: 'bg-[#F8F9FA] border-[#6C757D] border-2 rounded-md text-[#495057] font-Arial',
+                    popup: 'bg-[#F8F9FA] border-none shadow-none',
+                    title: 'text-[#04B2A1]',
+                    text: 'text-[#495057]',
+                    confirmButton: 'bg-green-600 text-white rounded-md'
+                }
+            });
+
+            
+            
+
+
+
+
+        });
+
+
+
+    </script>
+</body>
+
+</html>

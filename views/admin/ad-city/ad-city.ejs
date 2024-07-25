@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Admin - <%= pageTitle %>
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wdth,wght@62.5..100,100..900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <%- include('../include/ad-navbar.ejs') %>
+    <div class="w-[90%] mx-auto mt-5 overflow-x-auto">
+        <!-- <input type="text" id="searchInput" placeholder="ค้นหาจังหวัด..."> -->
+        <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+            <thead class="bg-gray-200 ">
+                <tr>
+                    <th class="py-2 px-4">รหัสเมือง</th>
+                    <th class="py-2 px-4">เมือง</th>
+                    <th class="py-2 px-4">วันที่</th>
+                    <th class="py-2 px-4">หน่วยงานผู้พัฒนา</th>
+                   
+                    <th class="py-2 px-4">ลงทุนของรัฐ</th>
+                    <th class="py-2 px-4">ลงทุนเอกชน</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% cityData.forEach(city => { %>
+                <tr onclick="check('<%= city.cityID %>')" class="hover:bg-gray-200 hover:border-[1px] border-black">
+                    <td class="py-2 px-4 border-1 border-r border-l"><%= city.cityID %></td>
+                    <td class="py-2 px-4 border-1 border-r border-l"><%= city.province %></td>
+                    <td class="py-2 px-4 border-1 border-r border-l "><%= city.date.toISOString().slice(0, 10) %></td>
+                    <td class="py-2 px-4 break-words border-1 border-r border-l"><%= city.developer %></td>
+                    
+                    <td class="py-2 px-4 text-center border-1 border-r border-l">
+                        <% if (city.government_investment === 0) { %>
+                            0 บาท
+                        <% } else { %>
+                            <%= city.government_investment.toLocaleString() %> บาท
+                        <% } %>
+                    </td>
+                    <td class="py-2 px-4 text-center border-1 border-r border-l">
+                        <% if (city.private_investment === 0) { %>
+                            0 บาท
+                        <% } else { %>
+                            <%= city.private_investment.toLocaleString() %> บาท
+                        <% } %>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+    <%- include('../include/ad-footer.ejs') %>
+</body>
+<script>
+    function check(cityID) {
+        window.location.href = `/admin/city/${cityID}`;
+    }
+
+    // Select the search input element
+    var searchInput = document.getElementById("searchInput");
+
+    // Add event listener for keyup event
+    searchInput.addEventListener("keyup", function () {
+        filterSearchTable();
+    });
+
+    function filterSearchTable() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        table = document.querySelector("tbody");
+        tr = table.getElementsByTagName("tr");
+
+        // Loop through each row and hide those that do not match the search query
+        for (i = 0; i < tr.length; i++) {
+            // Combine text content of all td elements within the row
+            txtValue = tr[i].textContent || tr[i].innerText;
+            // Check if the combined text content contains the search query
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = ""; // Show the row if it matches the search query
+            } else {
+                tr[i].style.display = "none"; // Hide the row if it does not match the search query
+            }
+        }
+    }
+
+</script>
+
+</html>

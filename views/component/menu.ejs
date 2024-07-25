@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <div class="flex justify-center relative">
+        <ul class="flex flex-col lg:flex-row list-none p-0 menu w-full lg:w-auto">
+            <li class="mx-2 my-1 lg:my-0">
+                <a href="/city" onclick="activateButton(this, '/city')" class="block no-underline hover:no-underline bg-yellow-500 text-black font-bold px-4 py-2 border-2 border-yellow-500 rounded-lg shadow-md transition duration-300 transform hover:bg-white hover:text-black hover:scale-105">
+                    <i class="fas fa-building"></i> แผน smart city
+                </a>
+            </li>
+            <li class="mx-2 my-1 lg:my-0">
+                <a href="/city/dashboard" onclick="activateButton(this,'/city/dashboard')" class="block no-underline hover:no-underline bg-yellow-500 text-black font-bold px-4 py-2 border-2 border-yellow-500 rounded-lg shadow-md transition duration-300 transform hover:bg-white hover:text-black hover:scale-105">
+                    <i class="fas fa-chart-line"></i> ผลรายงานความคืบหน้า dashboard
+                </a>
+            </li>
+            <li class="mx-2 my-1 lg:my-0">
+                <a href="/city/follow" onclick="activateButton(this, '/city/follow')" class="block no-underline hover:no-underline bg-yellow-500 text-black font-bold px-4 py-2 border-2 border-yellow-500 rounded-lg shadow-md transition duration-300 transform hover:bg-white hover:text-black hover:scale-105">
+                    <i class="fas fa-project-diagram"></i> รายงานความคืบหน้ารายโครงการ
+                </a>
+            </li>
+            <li class="mx-2 my-1 lg:my-0">
+                <a href="/city/upload" onclick="activateButton(this, '/city/upload')" class="block no-underline hover:no-underline bg-gray-400 text-gray-800 font-bold px-4 py-2 border-2 border-gray-400 rounded-lg shadow-md transition duration-300 transform hover:bg-yellow-400 hover:text-white hover:scale-105">
+                    <i class="fas fa-download"></i> ต่อตราสัญลักษณ์
+                </a>
+            </li>
+            <!-- Add more menu items as needed -->
+        </ul>
+    </div>
+
+    <script>
+
+        function activateButton(element, path) {
+            // Store the active path in local storage
+            localStorage.setItem('activePath', path);
+
+            // Redirect to the clicked path
+            window.location.href = path;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const activePath = localStorage.getItem('activePath') ;
+            console.log(activePath)
+            const buttons = document.querySelectorAll('.menu a');
+            buttons.forEach(button => {
+                // Remove the active class from all buttons
+                button.classList.remove('bg-white', 'text-black', 'scale-105');
+                button.classList.add('bg-yellow-500', 'text-black'); // Re-add original classes
+                // Check if the button's href matches the active path
+                if (button.getAttribute('href') === activePath) {
+                    button.classList.remove('bg-yellow-500');
+                    button.classList.add('bg-white', 'text-black', 'scale-105');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

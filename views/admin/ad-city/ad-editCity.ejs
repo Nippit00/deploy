@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Data</title>
+    <!-- Include Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Set the size of the map */
+      #map {
+        height: 400px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <script>
+      function initMap() {
+          const map = new google.maps.Map(document.getElementById("map"), {
+              center: { lat: <%=cityData.LAT %>, lng: <%=cityData.LNG %> },
+              zoom: 7,
+          });
+          const marker = new google.maps.Marker({
+              map,
+              draggable: true,
+              animation: google.maps.Animation.DROP,
+              position: { lat: <%=cityData.LAT %>, lng: <%=cityData.LNG %> }
+          });
+
+          google.maps.event.addListener(marker, "dragend", function(event) {
+              document.getElementById("latitude").value = this.getPosition().lat();
+              document.getElementById("longitude").value = this.getPosition().lng();
+          });
+      }
+    </script>
+  <body class="bg-gray-100">
+    <%- include('../include/ad-navbar.ejs') %>
+    <div class="container mx-auto p-4">
+      <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">แก้ไขข้อมูลเมือง</h1>
+      <form
+        id="editForm"
+        action="/admin/city/update/<%=cityData.cityID%>"
+        method="POST"
+        class="space-y-6 bg-white p-6 rounded-lg shadow-lg"
+      >
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="flex flex-col">
+            <label for="province" class="font-bold text-gray-700">Province:</label>
+            <input
+              type="text"
+              id="province"
+              name="province"
+              value="<%= cityData.province %>"
+              class="border border-gray-300 px-4 py-2 rounded-md focus:ring focus:ring-blue-200"
+            />
+          </div>
+          <div class="flex flex-col">
+            <label for="date" class="font-bold text-gray-700">Date:</label>
+            <input
+              type="date"
+              id="date"
+              name="date"
+              value="<%= cityData.date.toISOString().split('T')[0] %>"
+              class="border border-gray-300 px-4 py-2 rounded-md focus:ring focus:ring-blue-200"
+            />
+          </div>
+          <div class="flex flex-col">
+            <label for="developer" class="font-bold text-gray-700">Developer:</label>
+            <input
+              type="text"
+              id="developer"
+              name="developer"
+              value="<%= cityData.developer %>"
+              class="border border-gray-300 px-4 py-2 rounded-md focus:ring focus:ring-blue-200"
+            />
+          </div>
+         
+          <div class="flex flex-col">
+            <label for="govInvestment" class="font-bold text-gray-700">Government Investment:</label>
+            <input
+              type="number"
+              id="govInvestment"
+              name="government_investment"
+              value="<%= cityData.government_investment %>"
+              class="border border-gray-300 px-4 py-2 rounded-md focus:ring focus:ring-blue-200"
+            />
+          </div>
+          <div class="flex flex-col">
+            <label for="privateInvestment" class="font-bold text-gray-700">Private Investment:</label>
+            <input
+              type="number"
+              id="privateInvestment"
+              name="private_investment"
+              value="<%= cityData.private_investment %>"
+              class="border border-gray-300 px-4 py-2 rounded-md focus:ring focus:ring-blue-200"
+            />
+          </div>
+        </div>
+        <input type="hidden" name="_csrf" value="<%=csrfToken%>" id="token" />
+        <div id="map" class="rounded-md shadow-md mt-6"></div>
+        <div class="mt-6">
+          <label for="latitude" class="font-bold text-gray-700">Latitude:</label>
+          <input
+            type="text"
+            id="latitude"
+            name="LAT"
+            value="<%=cityData.LAT %>"
+            class="border border-gray-300 px-4 py-2 rounded-md focus:ring focus:ring-blue-200"
+          />
+        </div>
+        <div class="mt-4">
+          <label for="longitude" class="font-bold text-gray-700">Longitude:</label>
+          <input
+            type="text"
+            id="longitude"
+            name="LNG"
+            value="<%=cityData.LNG %>"
+            class="border border-gray-300 px-4 py-2 rounded-md focus:ring focus:ring-blue-200"
+          />
+        </div>
+        <script
+          async
+          defer
+          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_QQj5dFvATApuqEbGEt1i__KatMvU80o&callback=initMap&libraries=places"
+        ></script>
+        <button
+          type="button"
+          id="submitBtn"
+          class="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors mt-6"
+        >
+          Update Data
+        </button>
+      </form>
+    </div>
+    <%- include('../include/ad-footer.ejs') %>
+    
+    <script>
+      document.getElementById('submitBtn').addEventListener('click', function() {
+  Swal.fire({
+    title: "คุณแน่ใจหรือไม่?",
+    text: "คุณต้องการอัปเดตข้อมูลหรือไม่?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'ใช่, อัปเดตข้อมูล!',
+    cancelButtonText: 'ยกเลิก'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById('editForm').submit();
+    }
+  });
+});
+
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const successParam = urlParams.get('success');
+      if (successParam === 'true') {
+        Swal.fire({
+          title: "แก้ไขเมืองสำเร็จ!",
+          text: "แก้ไขเมืองสำเร็จ!",
+          icon: "success",
+        }).then(function () {
+          window.location.href = "/admin/city/<%= cityData.cityID %>";
+        });
+      }
+    </script>
+  </body>
+</html>
