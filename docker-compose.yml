@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: website
+    ports:
+      - "8888:8888"
+    depends_on:
+      - db_depa
+    networks:
+      - webnet
+    environment:
+      DB_HOST: 'db_depa'
+      DB_USER: 'MYSQL_USER'
+      DB_PASSWORD: 'MYSQL_PASSWORD'
+      DB_DATABASE: 'EvaluationSheet'
+      PORT: 8888
+
+  db_depa:
+    image: mysql:8.4.2
+    container_name: db_depa
+    restart: always
+    ports:
+      - "3306:3306"
+    networks:
+      - webnet
+    environment:
+      MYSQL_ROOT_PASSWORD: 'MYSQL_ROOT_PASSWORD'
+      MYSQL_DATABASE: 'EvaluationSheet'
+      MYSQL_USER: 'MYSQL_USER'
+      MYSQL_PASSWORD: 'MYSQL_PASSWORD'
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin-containers
+    ports:
+      - "80:80"
+    depends_on:
+      - db_depa
+    networks:
+      - webnet
+    environment:
+      PMA_HOST: db_depa
+      PMA_PORT: "3306"
+
+networks:
+  webnet:
