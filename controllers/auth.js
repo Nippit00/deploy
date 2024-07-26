@@ -27,6 +27,17 @@ exports.getLogin = (req, res, next) => {
 
 const bcrypt = require('bcrypt');
 
+const query = (sql, params) => {
+  return new Promise((resolve, reject) => {
+    db.execute(sql, params, (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(result);
+    });
+  });
+};
+
 exports.PostLogin = async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
