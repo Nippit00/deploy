@@ -89,7 +89,7 @@ CREATE TABLE `anskpi` (
   `kpiID` varchar(15) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `ans` text NOT NULL,
-  `Round` int(11) NOT NULL
+  `round` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -104,7 +104,7 @@ CREATE TABLE `anssolution` (
   `timestamp` text NOT NULL,
   `questionID` text NOT NULL,
   `ans` text NOT NULL,
-  `Round` int(2) NOT NULL
+  `round` int(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -3028,10 +3028,10 @@ INSERT INTO `kpi` (`solutionID`, `kpiID`, `kpiName`, `goal`, `unit`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Login_log`
+-- Table structure for table `login_log`
 --
 
-CREATE TABLE `Login_log` (
+CREATE TABLE `login_log` (
   `Login_ID` int(7) NOT NULL,
   `cityID` text NOT NULL,
   `login_time` text NOT NULL,
@@ -3039,10 +3039,10 @@ CREATE TABLE `Login_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `Login_log`
+-- Dumping data for table `login_log`
 --
 
-INSERT INTO `Login_log` (`Login_ID`, `cityID`, `login_time`, `logout_time`) VALUES
+INSERT INTO `login_log` (`Login_ID`, `cityID`, `login_time`, `logout_time`) VALUES
 (9, '6201', '2024-04-26 04:16:18', ''),
 (10, '6201', '2024-04-26 04:17:25', NULL),
 (11, '6207', '2024-04-26 04:18:33', NULL),
@@ -4137,7 +4137,7 @@ INSERT INTO `Login_log` (`Login_ID`, `cityID`, `login_time`, `logout_time`) VALU
 (1100, 'test', '11/6/2567 14:06:57', '11/6/2567 14:08:01'),
 (1101, '6201', '11/6/2567 14:08:05', NULL),
 (1102, '6201', '11/6/2567 14:59:10', NULL);
-INSERT INTO `Login_log` (`Login_ID`, `cityID`, `login_time`, `logout_time`) VALUES
+INSERT INTO `login_log` (`Login_ID`, `cityID`, `login_time`, `logout_time`) VALUES
 (1103, '6201', '11/6/2567 14:59:40', NULL),
 (1104, '6201', '11/6/2567 15:00:14', '11/6/2567 15:24:46'),
 (1105, '6201', '11/6/2567 15:30:41', '11/6/2567 15:40:35'),
@@ -4729,10 +4729,10 @@ INSERT INTO `question` (`questionID`, `question`, `Description`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Round`
+-- Table structure for table `round`
 --
 
-CREATE TABLE `Round` (
+CREATE TABLE `round` (
   `RID` int(11) NOT NULL,
   `Date` date NOT NULL,
   `open` date NOT NULL,
@@ -4741,10 +4741,10 @@ CREATE TABLE `Round` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `Round`
+-- Dumping data for table `round`
 --
 
-INSERT INTO `Round` (`RID`, `Date`, `open`, `close`, `round`) VALUES
+INSERT INTO `round` (`RID`, `Date`, `open`, `close`, `round`) VALUES
 (1, '2021-08-13', '2024-06-30', '2024-07-06', 3),
 (2, '2021-10-28', '2024-06-30', '2024-07-06', 3),
 (3, '2022-08-27', '2024-06-30', '2024-07-06', 2),
@@ -5678,9 +5678,9 @@ ALTER TABLE `anssolution`
   ADD PRIMARY KEY (`ansID`);
 
 --
--- Indexes for table `Login_log`
+-- Indexes for table `login_log`
 --
-ALTER TABLE `Login_log`
+ALTER TABLE `login_log`
   ADD PRIMARY KEY (`Login_ID`);
 
 --
@@ -5690,9 +5690,9 @@ ALTER TABLE `question`
   ADD PRIMARY KEY (`questionID`);
 
 --
--- Indexes for table `Round`
+-- Indexes for table `round`
 --
-ALTER TABLE `Round`
+ALTER TABLE `round`
   ADD PRIMARY KEY (`RID`);
 
 --
@@ -5724,9 +5724,9 @@ ALTER TABLE `anssolution`
   MODIFY `ansID` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4430;
 
 --
--- AUTO_INCREMENT for table `Login_log`
+-- AUTO_INCREMENT for table `login_log`
 --
-ALTER TABLE `Login_log`
+ALTER TABLE `login_log`
   MODIFY `Login_ID` int(7) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1658;
 
 --
@@ -5736,9 +5736,9 @@ ALTER TABLE `question`
   MODIFY `questionID` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
--- AUTO_INCREMENT for table `Round`
+-- AUTO_INCREMENT for table `round`
 --
-ALTER TABLE `Round`
+ALTER TABLE `round`
   MODIFY `RID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 COMMIT;
 
