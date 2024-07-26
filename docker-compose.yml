@@ -41,7 +41,7 @@ services:
       PMA_HOST: db_depa
       PMA_PORT: "3306"
     ports:
-      - "81:80"
+      - "80:80"
     depends_on:
       - db_depa
 
