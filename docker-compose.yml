@@ -4,45 +4,46 @@ services:
   app:
     build: .
     container_name: website
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
     ports:
       - "8888:8888"
     depends_on:
       - db_depa
-    networks:
-      - webnet
     environment:
-      DB_HOST: 'db_depa'
-      DB_USER: 'MYSQL_USER'
-      DB_PASSWORD: 'MYSQL_PASSWORD'
-      DB_DATABASE: 'EvaluationSheet'
-      PORT: 8888
+      DB_HOST: db_depa
+      DB_USER: "MYSQL_USER"
+      DB_PASSWORD: "MYSQL_PASSWORD"
+      DB_NAME: "EvaluationSheet"
+    command: sh -c "npm install && npx nodemon app.js"
 
   db_depa:
-    image: mysql:8.4.2
+    image: mysql:latest
     container_name: db_depa
     restart: always
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "MYSQL_ROOT_PASSWORD"
+      MYSQL_DATABASE: "EvaluationSheet"
+      MYSQL_USER: "MYSQL_USER"
+      MYSQL_PASSWORD: "MYSQL_PASSWORD"
     ports:
       - "3306:3306"
-    networks:
-      - webnet
-    environment:
-      MYSQL_ROOT_PASSWORD: 'MYSQL_ROOT_PASSWORD'
-      MYSQL_DATABASE: 'EvaluationSheet'
-      MYSQL_USER: 'MYSQL_USER'
-      MYSQL_PASSWORD: 'MYSQL_PASSWORD'
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin-containers
-    ports:
-      - "80:80"
-    depends_on:
-      - db_depa
-    networks:
-      - webnet
+    restart: always
     environment:
       PMA_HOST: db_depa
       PMA_PORT: "3306"
+    ports:
+      - "81:80"
+    depends_on:
+      - db_depa
 
-networks:
-  webnet:
+volumes:
+  mysql-data:
