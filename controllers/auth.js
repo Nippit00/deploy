@@ -36,20 +36,20 @@ exports.getLogin = async (req, res, next) => {
 // *****************
 // **  postLogin  **
 // *****************
-exports.PostLogin = async (req, res) => {
+exports.postLogin = async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
   try {
     // Check if user exists
     const q = "SELECT * FROM citydata WHERE username = ?";
-    const data = await query(q, [username]);
+    const data = await executeQuery(q, [username]);
 
     if (!data || data.length === 0) {
       console.log("Not Found user");
       // Check for admin
       const AdminC = "SELECT * FROM `admininfo` WHERE adminusername = ?";
-      const adminData = await query(AdminC, [username]);
+      const adminData = await executeQuery(AdminC, [username]);
 
       if (!adminData || adminData.length === 0) {
         return res.status(404).redirect("/login");
@@ -68,7 +68,7 @@ exports.PostLogin = async (req, res) => {
           hour12: false,
         });
         const logQuery = "INSERT INTO `login_log` (`cityID`, `login_time`) VALUES (?, ?)";
-        const log = await query(logQuery, [adminInfo.AdminUsername, timestamp]);
+        const log = await executeQuery(logQuery, [adminInfo.AdminUsername, timestamp]);
         req.session.loginID = log.insertId;
         console.log("Admin login successful");
         return res.redirect("/admin");
@@ -92,7 +92,7 @@ exports.PostLogin = async (req, res) => {
         hour12: false,
       });
       const logQuery = "INSERT INTO `login_log` (`cityID`, `login_time`) VALUES (?, ?)";
-      const log = await query(logQuery, [cityData.cityID, timestamp]);
+      const log = await executeQuery(logQuery, [cityData.cityID, timestamp]);
       req.session.loginID = log.insertId;
       console.log("User login successful");
       res.redirect("/city");
