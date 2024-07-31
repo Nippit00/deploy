@@ -362,9 +362,11 @@ exports.getCityDashboard = (req, res, next) => {
   }
 };
 
+
+
 exports.getCityFollow = (req, res, next) => {
   const cityID = req.session.userID;
-  const q = "SELECT * FROM solution JOIN smart ON solution.smartKey = smart.smartKey JOIN city_home ON city_home.cityID = solution.cityID WHERE solution.cityID = ? AND solution.status_solution=1 GROUP BY solution.solutionName ORDER BY solution.solutionID ASC";
+  const q = "SELECT solution.solutionID,solution.solutionName,solution.smartKey,solution.cityID,solution.status,solution.status_solution,smart.smart,city_home.cityName FROM solution JOIN smart ON solution.smartKey = smart.smartKey JOIN city_home ON city_home.cityID = solution.cityID WHERE solution.cityID = ? AND solution.status_solution=1 GROUP BY solution.solutionID, solution.solutionName,solution.smartKey,solution.cityID,solution.status_solution,smart.smart,city_home.cityName ORDER BY solution.solutionID ASC;";
   const qRound = "SELECT * FROM citydata JOIN round ON citydata.date = round.Date WHERE citydata.cityID = ? ORDER BY round.round DESC"
   try {
     db.query(q, [cityID], (err, data) => {
@@ -406,6 +408,7 @@ exports.getCityFollow = (req, res, next) => {
     res.status(500).json(err)
   }
 };
+
 
 exports.getCityUpload = (req, res, next) => {
   const cityid = req.session.userID
