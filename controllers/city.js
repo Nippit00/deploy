@@ -1,5 +1,5 @@
 const db = require("../db.js");
-const moment = require('moment'); //ใช้ในการคำนวณวันที่
+const moment = require('moment'); //à¹ƒà¸Šà¹‰à¹ƒà¸™à¸à¸²à¸£à¸„à¸³à¸™à¸§à¸“à¸§à¸±à¸™à¸—à¸µà¹ˆ
 
 exports.GetCity = (req, res) => {
   const cityID = req.session.userID;
@@ -26,8 +26,8 @@ exports.GetCity = (req, res) => {
       const years = duration.years();
       const months = duration.months();
       const days = duration.days();
-      const totalDays = currentDate.diff(announcementDate, 'days'); //นับวันทั้งหมด
-      const twoYearsLater = announcementDate.clone().add(2, 'years'); //นับจากวันที่ประกาศไป2ปี
+      const totalDays = currentDate.diff(announcementDate, 'days'); //à¸™à¸±à¸šà¸§à¸±à¸™à¸—à¸±à¹‰à¸‡à¸«à¸¡à¸”
+      const twoYearsLater = announcementDate.clone().add(2, 'years'); //à¸™à¸±à¸šà¸ˆà¸²à¸à¸§à¸±à¸™à¸—à¸µà¹ˆà¸›à¸£à¸°à¸à¸²à¸¨à¹„à¸›2à¸›à¸µ
       const twoYearsLaterFormatted = twoYearsLater.format('DD/MM/YYYY');
 
 
@@ -71,13 +71,13 @@ exports.GetCity = (req, res) => {
                 req.session.isTime = false;
               }
 
-              //เเปลงวันสันเดือนปี พศ.ไทย
+              //à¹€à¹€à¸›à¸¥à¸‡à¸§à¸±à¸™à¸ªà¸±à¸™à¹€à¸”à¸·à¸­à¸™à¸›à¸µ à¸žà¸¨.à¹„à¸—à¸¢
               const Open = moment(dataRound[0].open);
               const Close = moment(dataRound[0].close);
               const dateOpen = Open.locale('th').add(543, 'years').format('DD MMMM YYYY');
               const dateClose = Close.locale('th').add(543, 'years').format('DD MMMM YYYY');
 
-              //เอามาเเยกค่าเป็น วัน เดือน ปี
+              //à¹€à¸­à¸²à¸¡à¸²à¹€à¹€à¸¢à¸à¸„à¹ˆà¸²à¹€à¸›à¹‡à¸™ à¸§à¸±à¸™ à¹€à¸”à¸·à¸­à¸™ à¸›à¸µ
               const formStartDay = Open.date();
               const formStartMonth = Open.month() + 1; // month is zero-indexed
               const formStartMonthThai = Open.locale('th').format('MMMM');
@@ -88,7 +88,7 @@ exports.GetCity = (req, res) => {
               const formEndYear = Close.year();
 
 
-              //คำนวณวันที่เหลือเวลาในการกรอกฟอร์ม
+              //à¸„à¸³à¸™à¸§à¸“à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸­à¹€à¸§à¸¥à¸²à¹ƒà¸™à¸à¸²à¸£à¸à¸£à¸­à¸à¸Ÿà¸­à¸£à¹Œà¸¡
               const formEndDate = moment([formEndYear-543, formEndMonth-1, formEndDay]);
               const currentDate = moment();
               formEndDate.hours(23).minutes(59).seconds(59).milliseconds(999);
@@ -96,7 +96,7 @@ exports.GetCity = (req, res) => {
               const remainingYears = durationEndForm.years();
               const remainingMonths = durationEndForm.months();
               const remainingDays = durationEndForm.days();
-              //คำนวณวันที่เหลือในการเปิดให้กรอกฟอร์ม
+              //à¸„à¸³à¸™à¸§à¸“à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸­à¹ƒà¸™à¸à¸²à¸£à¹€à¸›à¸´à¸”à¹ƒà¸«à¹‰à¸à¸£à¸­à¸à¸Ÿà¸­à¸£à¹Œà¸¡
               const formStartDate = moment([formStartYear-543, formStartMonth-1, formStartDay]);
               currentDate.hours(0).minutes(0).seconds(0).milliseconds(0);
               formStartDate.hours(23).minutes(59).seconds(59).milliseconds(999);
@@ -111,24 +111,24 @@ exports.GetCity = (req, res) => {
                 path: "/city",
                 cityInfo: cityData[0],
                 citysolution: solutionData,
-                smartKeyCounts: smartKeyCounts,// ส่งจำนวน smart key แต่ละตัวในออบเจกต์ไปยัง view
+                smartKeyCounts: smartKeyCounts,// à¸ªà¹ˆà¸‡à¸ˆà¸³à¸™à¸§à¸™ smart key à¹à¸•à¹ˆà¸¥à¸°à¸•à¸±à¸§à¹ƒà¸™à¸­à¸­à¸šà¹€à¸ˆà¸à¸•à¹Œà¹„à¸›à¸¢à¸±à¸‡ view
                 datafile: cityFileData,
                 announcementDuration: { years, months, days, totalDays, twoYearsLaterFormatted,twoYearsLaterFormatThai,dateOpen,dateClose,anvDays,anvMonths,anvYears},
                 province:province,
                 dataRound:JSON.stringify(dataRound[0]),
                 formDates: {
-                  formStartDay,//วันที่เปิดฟอร์มเเบบเเยก วัน เดือน ปี
+                  formStartDay,//à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸›à¸´à¸”à¸Ÿà¸­à¸£à¹Œà¸¡à¹€à¹€à¸šà¸šà¹€à¹€à¸¢à¸ à¸§à¸±à¸™ à¹€à¸”à¸·à¸­à¸™ à¸›à¸µ
                   formStartMonth,
                   formStartYear,
                   formEndDay,
                   formEndMonth,
                   formEndYear,
-                  formStartMonthThai,//เดือนไทย
+                  formStartMonthThai,//à¹€à¸”à¸·à¸­à¸™à¹„à¸—à¸¢
                   formEndMonthThai,
-                  remainingDays,//วันที่เหลือเวลากรอกฟอร์ม
+                  remainingDays,//à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸­à¹€à¸§à¸¥à¸²à¸à¸£à¸­à¸à¸Ÿà¸­à¸£à¹Œà¸¡
                   remainingMonths,
                   remainingYears,
-                  remainingDayStart,//วันที่เหลือที่ฟอร์มจะเปิด
+                  remainingDayStart,//à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸­à¸—à¸µà¹ˆà¸Ÿà¸­à¸£à¹Œà¸¡à¸ˆà¸°à¹€à¸›à¸´à¸”
                   remainingMonthStart,
                   remainingYearStart,
                 }
@@ -251,7 +251,7 @@ exports.getCityDashboard = (req, res, next) => {
                 let unsuccessfulProjectsData = Array(10).fill(0);
 
                 const validProblems = dataProgress.filter(
-                  (row) => row.questionID == 5 && row.ans !== "null" && row.Round == round && row.ans !== "ไม่มีปัญหา/อุปสรรค" && row.ans !== "อื่น ๆ"
+                  (row) => row.questionID == 5 && row.ans !== "null" && row.Round == round && row.ans !== "à¹„à¸¡à¹ˆà¸¡à¸µà¸›à¸±à¸à¸«à¸²/à¸­à¸¸à¸›à¸ªà¸£à¸£à¸„" && row.ans !== "à¸­à¸·à¹ˆà¸™ à¹†"
                 );
                 const totalProblems = validProblems.length;
                 const problemCounts = {};
@@ -408,6 +408,14 @@ exports.getCityFollow = (req, res, next) => {
     res.status(500).json(err)
   }
 };
+
+
+
+
+
+
+
+
 
 
 exports.getCityUpload = (req, res, next) => {
