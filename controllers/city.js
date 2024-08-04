@@ -149,7 +149,7 @@ exports.GetCity = (req, res) => {
 
 exports.getCityDashboard = (req, res, next) => {
   const cityID = req.session.userID;
-  const q = `SELECT solution.solutionID, MAX(smart.smart) AS smart, smart.smartKey, solution.solutionName, solution.Progress FROM solution JOIN smart ON solution.smartKey = smart.smartKey JOIN citydata ON citydata.cityID = solution.cityID JOIN city_home ON city_home.cityID = solution.cityID WHERE solution.cityID = ? GROUP BY solution.solutionID, smart.smartKey, solution.solutionName, solution.Progress;`;
+  const q = `SELECT solution.solutionID,solution.status,solution.status_solution,smart.smartKey,solution.solutionName,solution.Progress,citydata.province,citydata.Vision FROM solution JOIN smart ON solution.smartKey = smart.smartKey JOIN citydata ON citydata.cityID = solution.cityID JOIN city_home ON city_home.cityID = solution.cityID WHERE solution.cityID = ? GROUP BY solution.solutionID,solution.status,solution.status_solution,smart.smartKey,solution.solutionName,solution.Progress,citydata.province,citydata.Vision;`;
   const qGetvalue = `SELECT * FROM anssolution JOIN solution ON anssolution.solutionID = solution.solutionID WHERE solution.cityID = ?;`;
   const qGetprogress = `SELECT * FROM solution JOIN anssolution ON solution.solutionID = anssolution.solutionID WHERE solution.cityID = ?;`;
   const qSmartKey = `SELECT smartKey,solutionName FROM solution  WHERE cityID=? `;
@@ -158,6 +158,7 @@ exports.getCityDashboard = (req, res, next) => {
   try {
     db.query(q, [cityID], (err, data) => {
       if (err) return res.status(500).json(err);
+      console.log(data)
 
       const dataUpdate = data.map((row) => {
         let parsedStatus;
