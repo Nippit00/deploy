@@ -158,7 +158,6 @@ exports.getCityDashboard = (req, res, next) => {
   try {
     db.query(q, [cityID], (err, data) => {
       if (err) return res.status(500).json(err);
-      console.log(data)
 
       const dataUpdate = data.map((row) => {
         let parsedStatus;
@@ -252,7 +251,7 @@ exports.getCityDashboard = (req, res, next) => {
                 let unsuccessfulProjectsData = Array(10).fill(0);
 
                 const validProblems = dataProgress.filter(
-                  (row) => row.questionID == 5 && row.ans !== "null" && row.Round == round && row.ans !== "à¹„à¸¡à¹ˆà¸¡à¸µà¸›à¸±à¸à¸«à¸²/à¸­à¸¸à¸›à¸ªà¸£à¸£à¸„" && row.ans !== "à¸­à¸·à¹ˆà¸™ à¹†"
+                  (row) => row.questionID == 5 && row.ans !== "null" && row.Round == round && row.ans !== "ไม่มีปัญหา/อุปสรรค" && row.ans !== "อื่น ๆ"
                 );
                 const totalProblems = validProblems.length;
                 const problemCounts = {};
