@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db_depa:3306
--- Generation Time: Aug 06, 2024 at 07:28 AM
+-- Generation Time: Aug 06, 2024 at 08:44 AM
 -- Server version: 9.0.1
 -- PHP Version: 8.2.8
 
@@ -52,9 +52,9 @@ CREATE TABLE `2yearfileupload` (
 --
 
 CREATE TABLE `admininfo` (
-  `AdminUsername` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
-  `AdminPassword` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
-  `AdminName` varchar(200) COLLATE utf8mb4_general_ci NOT NULL
+  `AdminUsername` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `AdminPassword` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `AdminName` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -433,8 +433,8 @@ INSERT INTO `city_home` (`cityID`, `cityName`) VALUES
 
 CREATE TABLE `kpi` (
   `solutionID` varchar(9) DEFAULT NULL,
-  `KPIID` varchar(12) DEFAULT NULL,
-  `KPIname` varchar(472) DEFAULT NULL,
+  `kpiID` varchar(12) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `kpiName` varchar(472) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `goal` varchar(11) DEFAULT NULL,
   `unit` varchar(389) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -443,7 +443,7 @@ CREATE TABLE `kpi` (
 -- Dumping data for table `kpi`
 --
 
-INSERT INTO `kpi` (`solutionID`, `KPIID`, `KPIname`, `goal`, `unit`) VALUES
+INSERT INTO `kpi` (`solutionID`, `kpiID`, `kpiName`, `goal`, `unit`) VALUES
 ('6207ENV01', '6207ENV01-01', 'คุณภาพอากาศในพื้นที่อยู่ในเกณฑ์มาตรฐาน AQI', '50', 'Air Quality Index (AQI)'),
 ('6207ENV01', '6207ENV01-02', 'พื้นที่สีเขียวในพื้นที่เพิ่มขึ้น', '14.59', 'ตารางเมตร/คน'),
 ('6207ECO01', '6207ECO01-01', 'ร้านค้าและผู้เข้าร่วมโครงการมีรายได้เพิ่มขึ้น', '10', 'ร้อยละ'),
@@ -862,7 +862,7 @@ INSERT INTO `kpi` (`solutionID`, `KPIID`, `KPIname`, `goal`, `unit`) VALUES
 ('6302ECO03', '6302ECO03-03', 'ศูนย์นวัตกรรมมีส่วนร่วม ในการสร้างสิ่งประดิษฐ์ทางนวัตกรรม (ไม่น้อยกว่า)', '30', 'ร้อยละของพื้นที่โครงการ'),
 ('6302ECO04', '6302ECO04-01', 'จัดตั้งศูนย์จัดหางานอัจฉริยะ (smart job center) (ไม่น้อยกว่า)', '3', 'แห่ง'),
 ('6302ECO04', '6302ECO04-02', 'เกิดระบบการจัดเก็บรวบรวมข้อมูลแหล่งงานและแรงงาน', '1', 'ระบบ');
-INSERT INTO `kpi` (`solutionID`, `KPIID`, `KPIname`, `goal`, `unit`) VALUES
+INSERT INTO `kpi` (`solutionID`, `kpiID`, `kpiName`, `goal`, `unit`) VALUES
 ('6302ECO04', '6302ECO04-03', 'อัตราการว่างงานของประชากรภายในพื้นที่', '20', 'ร้อยละของประชาชนทั้งหมด'),
 ('6302ECO05', '6302ECO05-01', 'ร้อยละของการให้บริการระบบหรือทำธุรกรรมทางการเงินออนไลน์ ในพื้นที่โครงการ', '100', 'ร้อยละของพื้นที่โครงการ'),
 ('6302ECO05', '6302ECO05-02', 'มีความปลอดภัยและแม่นยำในการประกอบธุรกรรม ครอบคลุมพื้นที่โครงการ', '', ''),
@@ -1283,7 +1283,7 @@ INSERT INTO `kpi` (`solutionID`, `KPIID`, `KPIname`, `goal`, `unit`) VALUES
 ('6412PEO03', '6412PEO03-02', 'มีชมรมนักกีฬา E-Sport ในทุกโรงเรียนในเขตเทศบาล', '', ''),
 ('6412PEO03', '6412PEO03-03', 'ร้อยละของโรงเรียนที่มีการเพิ่มการเรียนการสอน E-Sport', '20', 'ร้อยละของจำนวนโรงเรียนในพื้นที่'),
 ('6412LIV01', '6412LIV01-01', 'เกิดระบบ Aging Society Information System', '1', 'ระบบ');
-INSERT INTO `kpi` (`solutionID`, `KPIID`, `KPIname`, `goal`, `unit`) VALUES
+INSERT INTO `kpi` (`solutionID`, `kpiID`, `kpiName`, `goal`, `unit`) VALUES
 ('6412LIV01', '6412LIV01-02', 'ร้อยละของประชาชนที่สามารถเข้าถึงการให้บริการ', '60', 'ร้อยละของประชาชนทั้งหมด'),
 ('6412LIV01', '6412LIV01-03', 'ร้อยละของประชาชนผู้ใช้บริการที่มีความพึงพอใจต่อการรับบริการ', '60', 'ร้อยละของผู้ใช้บริการ'),
 ('6412LIV02', '6412LIV02-01', 'ร้อยละของผู้สูงอายุในเขตเทศบาลนครพิษณุโลกในวัยเกษียณที่เข้ารับบริการด้านสาธารณสุข (ไม่น้อยกว่า)', '80', 'ร้อยละของจำนวนผู้สูงอายุ'),
@@ -1752,7 +1752,7 @@ INSERT INTO `kpi` (`solutionID`, `KPIID`, `KPIname`, `goal`, `unit`) VALUES
 ('6205PEO04', '6205PEO04-01', 'ร้อยละประชาชนมี Digital Literacy (มากกว่า)', '60', 'ร้อยละของประชาชนในพื้นที่'),
 ('6205LIV01', '6205LIV01-01', 'ร้อยประชาชนเข้าถึงข้อมูลคุณภาพอากาศ', '60', 'ร้อยละ'),
 ('6205LIV01', '6205LIV01-02', 'ร้อยละผู้ป่วยลดลง', '10', 'ร้อยละของผู้ป่วยโรคทางเดินหายใจ');
-INSERT INTO `kpi` (`solutionID`, `KPIID`, `KPIname`, `goal`, `unit`) VALUES
+INSERT INTO `kpi` (`solutionID`, `kpiID`, `kpiName`, `goal`, `unit`) VALUES
 ('6205LIV02', '6205LIV02-01', 'ร้อยละความเสียหายตต่อชีวิตประชาชนลดลง', '30', 'ร้อยละ'),
 ('6205LIV02', '6205LIV02-02', 'ร้อยละพื้นที่อยู่อาศัยของช้างเพิ่มขึ้น', '10', 'ร้อยละ (เมื่อเทียบกับปีที่ผ่านมา)'),
 ('6205LIV03', '6205LIV03-01', 'ร้อยละพื้นที่ให้บริการบรถจักรยานครอบคลุมพื้นที่ (ไม่น้อยกว่า)', '20', 'ร้อยละของพื้นที่สวนพฤกษศาสตร์ดงฟ้าห่วน'),
@@ -2017,9 +2017,9 @@ INSERT INTO `kpi` (`solutionID`, `KPIID`, `KPIname`, `goal`, `unit`) VALUES
 
 CREATE TABLE `login_log` (
   `Login_ID` int NOT NULL,
-  `cityID` text COLLATE utf8mb4_general_ci NOT NULL,
-  `login_time` text COLLATE utf8mb4_general_ci NOT NULL,
-  `logout_time` text COLLATE utf8mb4_general_ci
+  `cityID` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `login_time` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `logout_time` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -3682,7 +3682,19 @@ INSERT INTO `login_log` (`Login_ID`, `cityID`, `login_time`, `logout_time`) VALU
 (1660, 'test', '6/8/2567 09:55:06', NULL),
 (1661, '6201', '6/8/2567 09:59:27', '6/8/2567 13:35:10'),
 (1662, 'test', '6/8/2567 13:38:53', '6/8/2567 13:39:42'),
-(1663, '6201', '6/8/2567 13:41:07', '6/8/2567 13:41:41');
+(1663, '6201', '6/8/2567 13:41:07', '6/8/2567 13:41:41'),
+(1664, '6201', '6/8/2567 14:50:14', NULL),
+(1665, '6201', '6/8/2567 14:50:25', NULL),
+(1666, '6201', '6/8/2567 15:01:24', NULL),
+(1667, '6201', '6/8/2567 15:04:54', NULL),
+(1668, '6201', '6/8/2567 15:11:05', NULL),
+(1669, '6201', '6/8/2567 15:13:02', NULL),
+(1670, '6201', '6/8/2567 15:13:26', NULL),
+(1671, '6201', '6/8/2567 15:19:35', '6/8/2567 15:21:04'),
+(1672, '6201', '6/8/2567 15:19:52', NULL),
+(1673, '6201', '6/8/2567 15:21:19', '6/8/2567 15:41:06'),
+(1674, 'test', '6/8/2567 15:41:14', '6/8/2567 15:41:24'),
+(1675, '6201', '6/8/2567 15:42:50', NULL);
 
 -- --------------------------------------------------------
 
@@ -3692,8 +3704,8 @@ INSERT INTO `login_log` (`Login_ID`, `cityID`, `login_time`, `logout_time`) VALU
 
 CREATE TABLE `question` (
   `questionID` int NOT NULL,
-  `question` text COLLATE utf8mb4_general_ci NOT NULL,
-  `Description` text COLLATE utf8mb4_general_ci NOT NULL
+  `question` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `Description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -4709,7 +4721,7 @@ ALTER TABLE `anssolution`
 -- AUTO_INCREMENT for table `login_log`
 --
 ALTER TABLE `login_log`
-  MODIFY `Login_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1664;
+  MODIFY `Login_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1676;
 
 --
 -- AUTO_INCREMENT for table `question`
