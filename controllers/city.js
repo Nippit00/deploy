@@ -71,13 +71,13 @@ exports.GetCity = (req, res) => {
                 req.session.isTime = false;
               }
 
-              //à¹€à¹€à¸›à¸¥à¸‡à¸§à¸±à¸™à¸ªà¸±à¸™à¹€à¸”à¸·à¸­à¸™à¸›à¸µ à¸žà¸¨.à¹„à¸—à¸¢
+              //à¹€à¹€à¸›à¸¥à¸‡à¸§à¸±à¸™à¸ªà¸±à¸™à¹€à¸”à¸·à¸¬à¸™à¸›à¸µ à¸žà¸¨.à¹„à¸—à¸¢
               const Open = moment(dataRound[0].open);
               const Close = moment(dataRound[0].close);
               const dateOpen = Open.locale('th').add(543, 'years').format('DD MMMM YYYY');
               const dateClose = Close.locale('th').add(543, 'years').format('DD MMMM YYYY');
 
-              //à¹€à¸­à¸²à¸¡à¸²à¹€à¹€à¸¢à¸à¸„à¹ˆà¸²à¹€à¸›à¹‡à¸™ à¸§à¸±à¸™ à¹€à¸”à¸·à¸­à¸™ à¸›à¸µ
+              //à¹€à¸¬à¸²à¸¡à¸²à¹€à¹€à¸¢à¸à¸„à¹ˆà¸²à¹€à¸›à¹‡à¸™ à¸§à¸±à¸™ à¹€à¸”à¸·à¸¬à¸™ à¸›à¸µ
               const formStartDay = Open.date();
               const formStartMonth = Open.month() + 1; // month is zero-indexed
               const formStartMonthThai = Open.locale('th').format('MMMM');
@@ -88,7 +88,7 @@ exports.GetCity = (req, res) => {
               const formEndYear = Close.year();
 
 
-              //à¸„à¸³à¸™à¸§à¸“à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸­à¹€à¸§à¸¥à¸²à¹ƒà¸™à¸à¸²à¸£à¸à¸£à¸­à¸à¸Ÿà¸­à¸£à¹Œà¸¡
+              //à¸„à¸³à¸™à¸§à¸“à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸-à¹€à¸§à¸¥à¸²à¹ƒà¸™à¸à¸²à¸£à¸à¸£à¸¬à¸à¸Ÿà¸¬à¸£à¹Œà¸¡
               const formEndDate = moment([formEndYear-543, formEndMonth-1, formEndDay]);
               const currentDate = moment();
               formEndDate.hours(23).minutes(59).seconds(59).milliseconds(999);
@@ -96,7 +96,7 @@ exports.GetCity = (req, res) => {
               const remainingYears = durationEndForm.years();
               const remainingMonths = durationEndForm.months();
               const remainingDays = durationEndForm.days();
-              //à¸„à¸³à¸™à¸§à¸“à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸­à¹ƒà¸™à¸à¸²à¸£à¹€à¸›à¸´à¸”à¹ƒà¸«à¹‰à¸à¸£à¸­à¸à¸Ÿà¸­à¸£à¹Œà¸¡
+              //à¸„à¸³à¸™à¸§à¸“à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸-à¹ƒà¸™à¸à¸²à¸£à¹€à¸›à¸´à¸”à¹ƒà¸«à¹‰à¸à¸£à¸¬à¸à¸Ÿà¸¬à¸£à¹Œà¸¡
               const formStartDate = moment([formStartYear-543, formStartMonth-1, formStartDay]);
               currentDate.hours(0).minutes(0).seconds(0).milliseconds(0);
               formStartDate.hours(23).minutes(59).seconds(59).milliseconds(999);
@@ -111,24 +111,24 @@ exports.GetCity = (req, res) => {
                 path: "/city",
                 cityInfo: cityData[0],
                 citysolution: solutionData,
-                smartKeyCounts: smartKeyCounts,// à¸ªà¹ˆà¸‡à¸ˆà¸³à¸™à¸§à¸™ smart key à¹à¸•à¹ˆà¸¥à¸°à¸•à¸±à¸§à¹ƒà¸™à¸­à¸­à¸šà¹€à¸ˆà¸à¸•à¹Œà¹„à¸›à¸¢à¸±à¸‡ view
+                smartKeyCounts: smartKeyCounts,// à¸ªà¹ˆà¸‡à¸ˆà¸³à¸™à¸§à¸™ smart key à¹à¸•à¹ˆà¸¥à¸°à¸•à¸±à¸§à¹ƒà¸™à¸¬à¸¬à¸šà¹€à¸ˆà¸à¸•à¹Œà¹„à¸›à¸¢à¸±à¸‡ view
                 datafile: cityFileData,
                 announcementDuration: { years, months, days, totalDays, twoYearsLaterFormatted,twoYearsLaterFormatThai,dateOpen,dateClose,anvDays,anvMonths,anvYears},
                 province:province,
                 dataRound:JSON.stringify(dataRound[0]),
                 formDates: {
-                  formStartDay,//à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸›à¸´à¸”à¸Ÿà¸­à¸£à¹Œà¸¡à¹€à¹€à¸šà¸šà¹€à¹€à¸¢à¸ à¸§à¸±à¸™ à¹€à¸”à¸·à¸­à¸™ à¸›à¸µ
+                  formStartDay,//à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸›à¸´à¸”à¸Ÿà¸-à¸£à¹Œà¸¡à¹€à¹€à¸šà¸šà¹€à¹€à¸¢à¸ à¸§à¸±à¸™ à¹€à¸”à¸·à¸¬à¸™ à¸›à¸µ
                   formStartMonth,
                   formStartYear,
                   formEndDay,
                   formEndMonth,
                   formEndYear,
-                  formStartMonthThai,//à¹€à¸”à¸·à¸­à¸™à¹„à¸—à¸¢
+                  formStartMonthThai,//à¹€à¸”à¸·à¸¬à¸™à¹„à¸—à¸¢
                   formEndMonthThai,
-                  remainingDays,//à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸­à¹€à¸§à¸¥à¸²à¸à¸£à¸­à¸à¸Ÿà¸­à¸£à¹Œà¸¡
+                  remainingDays,//à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸¬à¹€à¸§à¸¥à¸²à¸à¸£à¸-à¸à¸Ÿà¸¬à¸£à¹Œà¸¡
                   remainingMonths,
                   remainingYears,
-                  remainingDayStart,//à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸­à¸—à¸µà¹ˆà¸Ÿà¸­à¸£à¹Œà¸¡à¸ˆà¸°à¹€à¸›à¸´à¸”
+                  remainingDayStart,//à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸¬à¸—à¸µà¹ˆà¸Ÿà¸-à¸£à¹Œà¸¡à¸ˆà¸°à¹€à¸›à¸´à¸”
                   remainingMonthStart,
                   remainingYearStart,
                 }
@@ -366,46 +366,58 @@ exports.getCityDashboard = (req, res, next) => {
 
 exports.getCityFollow = (req, res, next) => {
   const cityID = req.session.userID;
-  const q = "SELECT solution.solutionID,solution.solutionName,solution.smartKey,solution.cityID,solution.status,solution.status_solution,smart.smart,city_home.cityName FROM solution JOIN smart ON solution.smartKey = smart.smartKey JOIN city_home ON city_home.cityID = solution.cityID WHERE solution.cityID = ? AND solution.status_solution=1 GROUP BY solution.solutionID, solution.solutionName,solution.smartKey,solution.cityID,solution.status_solution,smart.smart,city_home.cityName ORDER BY solution.solutionID ASC;";
-  const qRound = "SELECT * FROM citydata JOIN round ON citydata.date = round.Date WHERE citydata.cityID = ? ORDER BY round.round DESC"
+  const q = `SELECT solution.solutionID, solution.solutionName, solution.smartKey, solution.cityID, 
+                    solution.status, solution.status_solution, smart.smart, city_home.cityName
+             FROM solution 
+             JOIN smart ON solution.smartKey = smart.smartKey 
+             JOIN city_home ON city_home.cityID = solution.cityID 
+             WHERE solution.cityID = ? 
+             AND solution.status_solution=1 
+             GROUP BY solution.solutionID, solution.solutionName, solution.smartKey, solution.cityID, 
+                      solution.status, solution.status_solution, smart.smart, city_home.cityName 
+             ORDER BY solution.solutionID ASC;`;
+
+  const qRound = `SELECT * FROM citydata 
+                  JOIN round ON citydata.date = round.Date 
+                  WHERE citydata.cityID = ? 
+                  ORDER BY round.round DESC`;
+
   try {
     db.query(q, [cityID], (err, data) => {
       if (err) return res.status(500).json(err);
-      // console.log("Check follow data :",data)
-      const currenttime = new Date();
-      
+
+      // Ensure followdata is not undefined or null
       const followdata = data.map(row => {
         return {
           ...row,
-          status: JSON.parse(row.status)
+          status: JSON.parse(row.status || '{}')
         };
       });
-      
-      db.query(qRound,[cityID],(err,dataRound)=>{
-        // console.log(dataRound)
-        const openForm = moment(dataRound[0].open);
-        const closeForm = moment(dataRound[0].close);
-        openForm.hours(0).minutes(0).seconds(0).milliseconds(0);
-        closeForm.hours(23).minutes(59).seconds(59).milliseconds(999);
-        
+
+      db.query(qRound, [cityID], (err, dataRound) => {
         if (err) return res.status(500).json(err);
+
+        // Handle empty or undefined dataRound
+        const roundData = dataRound[0] || {};
+        const openForm = moment(roundData.open).startOf('day');
+        const closeForm = moment(roundData.close).endOf('day');
+
         res.render("city/follow", {
           pageTitle: "Follow",
           path: "/city",
-          cityName: dataRound[0].province,
-          followdata: followdata || [],
-          dataRound:dataRound[0],
-          dateForm:{
+          cityName: roundData.province || 'Unknown',
+          followdata: followdata || [], // Default to empty array if undefined
+          dataRound: roundData,
+          dateForm: {
             openForm: openForm.toISOString(),
             closeForm: closeForm.toISOString(),
           }
         });
-      })
+      });
     });
-
   } catch (err) {
     console.log(err);
-    res.status(500).json(err)
+    res.status(500).json(err);
   }
 };
 
