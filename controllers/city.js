@@ -390,7 +390,7 @@ exports.getCityFollow = (req, res, next) => {
       const followdata = data.map(row => {
         return {
           ...row,
-          status: JSON.parse(row.status || '{}')
+          status: JSON.parse(row.status)
         };
       });
 
@@ -401,6 +401,7 @@ exports.getCityFollow = (req, res, next) => {
         const roundData = dataRound[0] || {};
         const openForm = moment(roundData.open).startOf('day');
         const closeForm = moment(roundData.close).endOf('day');
+        console.log(data)
 
         res.render("city/follow", {
           pageTitle: "Follow",
