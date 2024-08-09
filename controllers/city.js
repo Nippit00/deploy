@@ -390,7 +390,7 @@ exports.getCityFollow = (req, res, next) => {
       const followdata = data.map(row => {
         return {
           ...row,
-          status: JSON.parse(row.status)
+          status: JSON.parse(row.status || '{}')
         };
       });
 

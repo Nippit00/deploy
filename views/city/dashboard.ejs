@@ -40,7 +40,7 @@
 
   <div class="text-center py-5">
     <h1 class="text-4xl">
-      à¸œà¸¥à¸£à¸²à¸¢à¸‡à¸²à¸™à¸„à¸§à¸²à¸¡à¸„à¸·à¸šà¸«à¸™à¹‰à¸²<span class="text-[#04b2a1]">à¹€à¸¡à¸·à¸­à¸‡à¸—à¸µà¹ˆà¹„à¸”à¹‰à¸£à¸±à¸šà¸•à¸£à¸²à¸ªà¸±à¸à¸¥à¸±à¸à¸©à¸“à¹Œ</span>
+      ผลรายงานความคืบหน้า<span class="text-[#04b2a1]">เมืองที่ได้รับตราสัญลักษณ์</span>
     </h1>
   </div>
 
@@ -54,21 +54,21 @@
         <div ><img src="/img/navpic.png" alt="logo" class="w-72"></div>
       </div>
       <div class="flex justify-between h-16 items-center">
-        <div class="text-xl mx-5">à¸§à¸´à¸ªà¸±à¸¢à¸—à¸±à¸¨à¸™à¹Œ:à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸¡à¸µ</div>
-        <div class="text-xl mx-5"> à¸›à¸£à¸°à¹€à¸ à¸—: <%= new Date() - new Date(data.date) < 6 * 30 * 24 * 60 * 60 * 1000 ? 'à¹€à¸¡à¸·à¸­à¸‡à¹ƒà¸«à¸¡à¹ˆ' : 'à¹€à¸¡à¸·à¸­à¸‡à¹€à¸à¹ˆà¸²' %></div>
+        <div class="text-xl mx-5">วิสัยทัศน์:ยังไม่มี</div>
+        <div class="text-xl mx-5"> ประเภท: <%= new Date() - new Date(data.date) < 6 * 30 * 24 * 60 * 60 * 1000 ? 'เมืองใหม่' : 'เมืองเก่า' %></div>
       </div>
     </div>  
-        <!-- à¸à¸£à¸²à¸Ÿ  -->
+        <!-- กราฟ  -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <!-- à¸šà¸£à¸´à¸à¸²à¸£à¹€à¸¡à¸·à¸­à¸‡à¸­à¸±à¸ˆà¸‰à¸£à¸´à¸¢à¸° -->
+          <!-- บริการเมืองอัจฉริยะ -->
           <% const initialRound=JSON.parse(rounded)[Object.keys(JSON.parse(rounded)).length]; %>
           <div class="card col-span-1 lg:ml-3">
-              <h3 class="section-title">à¸šà¸£à¸´à¸à¸²à¸£à¹€à¸¡à¸·à¸­à¸‡à¸­à¸±à¸ˆà¸‰à¸£à¸´à¸¢à¸° : <span style="color: #2c7f97;">
+              <h3 class="section-title">บริการเมืองอัจฉริยะ : <span style="color: #2c7f97;">
                   <%= Object.keys(initialRound.smartkeycount).length-1 %>
               </span>
-              Smarts <br />à¸ˆà¸³à¸™à¸§à¸™à¹‚à¸„à¸£à¸‡à¸à¸²à¸£ : <span style="color: #d0a519;">
+              Smarts <br />จำนวนโครงการ : <span style="color: #d0a519;">
                   <%= initialRound.count-4 %>
-              </span> à¹‚à¸„à¸£à¸‡à¸à¸²à¸£</h3>
+              </span> โครงการ</h3>
               <div class="grid grid-cols-3 gap-2">
                   <!-- Icon blocks looped through initialRound.smartkeycount -->
                   <% Object.entries(initialRound.smartkeycount).forEach(([key, count]) => { if(key==="PIF"||key==="DIF"){}
@@ -80,12 +80,12 @@
                   <% }}) %>
               </div>
           </div>
-          <!-- à¸à¸£à¸²à¸Ÿ -->
+          <!-- กราฟ -->
           <div class="card col-span-1 lg:col-span-2">
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <!-- à¸„à¸§à¸²à¸¡à¸„à¸·à¸šà¸«à¸™à¹‰à¸²à¹‚à¸„à¸£à¸‡à¸à¸²à¸£ -->
+                  <!-- ความคืบหน้าโครงการ -->
                   <div class="text-center">
-                      <h3 class="section-title ">à¸„à¸§à¸²à¸¡à¸„à¸·à¸šà¸«à¸™à¹‰à¸²à¸‚à¸­à¸‡à¹‚à¸„à¸£à¸‡à¸à¸²à¸£à¸•à¸²à¸¡à¹à¸œà¸™</h3>
+                      <h3 class="section-title ">ความคืบหน้าของโครงการตามแผน</h3>
                       <div class="chart-container">
                           <canvas id="progressChart"></canvas>
                       </div>
@@ -93,9 +93,9 @@
                           <canvas id="avgprogress"></canvas>
                       </div>
                   </div>
-                  <!-- à¸„à¹ˆà¸²à¹€à¸‰à¸¥à¸µà¹ˆà¸¢à¸„à¸§à¸²à¸¡à¸ªà¸³à¹€à¸£à¹‡à¸ˆ -->
+                  <!-- ค่าเฉลี่ยความสำเร็จ -->
                   <div class="text-center">
-                      <h3 class="section-title">à¸£à¹‰à¸­à¸¢à¸¥à¸°à¸„à¸§à¸²à¸¡à¸ªà¸³à¹€à¸£à¹‡à¸ˆà¸‚à¸­à¸‡à¹à¸œà¸™</h3>
+                      <h3 class="section-title">ร้อยละความสำเร็จของแผน</h3>
                       <div class="chart-container">
                           <canvas id="successChart"></canvas>
                       </div>
@@ -107,14 +107,14 @@
           </div>
           <!-- problem -->
           <div class="col-span-1 lg:col-span-1">
-              <h3 class="section-title" style="text-align: center;">à¸›à¸±à¸à¸«à¸²à¹à¸¥à¸°à¸­à¸¸à¸›à¸ªà¸£à¸£à¸„</h3>
+              <h3 class="section-title" style="text-align: center;">ปัญหาและอุปสรรค</h3>
               <div class="chart-container w-full">
                   <canvas id="problemsChart" class="w-full"></canvas>
               </div>
           </div>
-          <!-- à¹‚à¸„à¸£à¸‡à¸à¸²à¸£à¸—à¸µà¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆ -->
+          <!-- โครงการที่สำเร็จ -->
           <div class="col-span-1 lg:col-span-2 overflow-scroll h-52 border-2 border-sky-100 bg-sky-100 p-3 rounded-xl m-5">
-              <div class="section-title">à¹‚à¸„à¸£à¸‡à¸à¸²à¸£à¸—à¸µà¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆ</div>
+              <div class="section-title">โครงการที่สำเร็จ</div>
               <ul class="list-disc pl-5 space-y-2">
                   <% initialRound.complete.forEach(item => { %>
                   <li><%= item %></li>
@@ -130,21 +130,21 @@
   </div>
 
   <div class="text-center mt-10 flex flex-col md:flex-row md:justify-center items-center hidden lg:flex lg:text-lg">
-    <div><span class="text-red-600 font-semibold">*** à¸ªà¸–à¸²à¸™à¸°à¸à¸²à¸£à¸£à¸²à¸¢à¸‡à¸²à¸™:</span></div> 
-    <div><span class="text-black"> <span class="inline-block w-4 h-4 rounded-full bg-red-500"></span></span>  à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸£à¸²à¸¢à¸‡à¸²à¸™ </div> 
-    <div><span class="text-black"> <span class="inline-block w-4 h-4 rounded-full bg-yellow-500"></span></span>  à¸‰à¸šà¸±à¸šà¸£à¹ˆà¸²à¸‡ </div> 
-    <div><span class="text-black"> <span class="inline-block w-4 h-4 rounded-full bg-green-500"></span></span>  à¸£à¸²à¸¢à¸‡à¸²à¸™à¹à¸¥à¹‰à¸§ </div>
-    <div><span class="text-black"> <span class="inline-block w-4 h-4 rounded-full bg-gray-200 border-2 border-gray-500"></span></span>  à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸–à¸¶à¸‡à¸£à¸­à¸šà¸£à¸²à¸¢à¸‡à¸²à¸™ </div>
+    <div><span class="text-red-600 font-semibold">*** สถานะการรายงาน:</span></div> 
+    <div><span class="text-black"> <span class="inline-block w-4 h-4 rounded-full bg-red-500"></span></span>  ยังไม่รายงาน </div> 
+    <div><span class="text-black"> <span class="inline-block w-4 h-4 rounded-full bg-yellow-500"></span></span>  ฉบับร่าง </div> 
+    <div><span class="text-black"> <span class="inline-block w-4 h-4 rounded-full bg-green-500"></span></span>  รายงานแล้ว </div>
+    <div><span class="text-black"> <span class="inline-block w-4 h-4 rounded-full bg-gray-200 border-2 border-gray-500"></span></span>  ยังไม่ถึงรอบรายงาน </div>
     <div class="hidden md:block"><span class="text-red-600 font-semibold">***</span></div>
   </div>
 
   <!-- Project Items Section -->
   <div class="max-w-dvh mx-8 my-10 bg-gray-400 p-5 rounded-xl shadow-md border-2 border-teal-400 hidden lg:block">
-    <h6 class="text-white text-2xl font-bold text-center mb-5">à¸ªà¸£à¸¸à¸›à¸ªà¸–à¸²à¸™à¸°à¸£à¸²à¸¢à¸‡à¸²à¸™</h6>
+    <h6 class="text-white text-2xl font-bold text-center mb-5">สรุปสถานะรายงาน</h6>
     <div class="grid grid-cols-2 sm:grid-cols-11 gap-4 items-center">
       <% const projectItems = [
-          { id: 10, imgSrc: "/img/favi.png", alt: "Image 0", title: "à¹‚à¸„à¸£à¸‡à¸ªà¸£à¹‰à¸²à¸‡à¸žà¸·à¹‰à¸™à¸à¸²à¸™à¸à¸²à¸¢à¸ à¸²à¸ž" },
-          { id: 11, imgSrc: "/img/favi.png", alt: "Image 1", title: "à¹‚à¸„à¸£à¸‡à¸ªà¸£à¹‰à¸²à¸‡à¸žà¸·à¹‰à¸™à¸à¸²à¸™à¸”à¸´à¸ˆà¸´à¸•à¸­à¸¥" },
+          { id: 10, imgSrc: "/img/favi.png", alt: "Image 0", title: "โครงสร้างพื้นฐานกายภาพ" },
+          { id: 11, imgSrc: "/img/favi.png", alt: "Image 1", title: "โครงสร้างพื้นฐานดิจิตอล" },
           { id: 1, imgSrc: "/img/cdp.png", alt: "Image 2", title: "CDP" },
           { id: 2, imgSrc: "/img/ENV.png", alt: "Image 3", title: "Smart Environment" },
           { id: 3, imgSrc: "/img/ENE.png", alt: "Image 4", title: "Smart Energy" },
@@ -168,10 +168,10 @@
     <div class="w-full border-collapse bg-white shadow-lg text-center mt-5">
       <div class="grid grid-cols-8 bg-teal-400 text-white">
         <div class="p-2.5 col-span-4 ">Project</div>
-        <div class="p-2.5">à¸„à¸§à¸²à¸¡à¸ªà¸³à¹€à¸£à¹‡à¸ˆ</div>
-        <div class="p-2.5">Percent à¸„à¸§à¸²à¸¡à¸„à¸·à¸šà¸«à¸™à¹‰à¸²</div>
-        <div class="p-2.5"><span class="text-red">***</span>à¸£à¸­à¸šà¸•à¸´à¸”à¸•à¸²à¸¡ 12 à¹€à¸”à¸·à¸­à¸™<span class="text-red">***</span></div>
-        <div class="p-2.5">à¸£à¸­à¸šà¸•à¸´à¸”à¸•à¸²à¸¡à¸„à¸§à¸²à¸¡à¸„à¸·à¸šà¸«à¸™à¹‰à¸²à¹€à¸žà¸·à¹ˆà¸­à¸•à¹ˆà¸­à¸•à¸£à¸²à¸ªà¸±à¸à¸¥à¸±à¸à¸©à¸“à¹Œ</div>
+        <div class="p-2.5">ความสำเร็จ</div>
+        <div class="p-2.5">Percent ความคืบหน้า</div>
+        <div class="p-2.5"><span class="text-red">***</span>รอบติดตาม 12 เดือน<span class="text-red">***</span></div>
+        <div class="p-2.5">รอบติดตามความคืบหน้าเพื่อต่อตราสัญลักษณ์</div>
       </div>
       <div id="body-table">
         
@@ -248,7 +248,7 @@
   data.forEach((item) => {
     if(key==='ALL'){
      
-      const status = item.Progress === 100 ? "à¸ªà¸³à¹€à¸£à¹‡à¸ˆ" : "à¹„à¸¡à¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆ";
+      const status = item.Progress === 100 ? "สำเร็จ" : "ไม่สำเร็จ";
       let statusFormCircle = '';
           if (currentime >= new Date(dataRound.open)) {
             statusFormCircle = item.status === 2 || item.status === 3
@@ -282,7 +282,7 @@
     }
     else{
     if (item.smartKey === key) {
-      const status = item.Progress === 100 ? "à¸ªà¸³à¹€à¸£à¹‡à¸ˆ" : "à¹„à¸¡à¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆ";
+      const status = item.Progress === 100 ? "สำเร็จ" : "ไม่สำเร็จ";
       let statusFormCircle = '';
           if (currentime >= new Date(dataRound.open)) {
             statusFormCircle = item.status === 2 || item.status === 3
@@ -319,7 +319,7 @@
   const averageSuccess = calculateAverageSuccess(data, key);
   html += `
     <div class="grid grid-cols-8 hover:bg-gray-100">
-      <div class="p-5 border-b-2 col-span-4">à¸£à¸§à¸¡</div>
+      <div class="p-5 border-b-2 col-span-4">รวม</div>
       <div class="p-5 border-b-2">${averageSuccess }</div>
       <div class="p-5 border-b-2">${(averageProgress * 100).toFixed(0)}%</div>
       <div class="p-5 border-b-2"></div>
@@ -384,7 +384,7 @@ let initialRound = rounded[currentRound];
 const progressChart = new Chart(progressCtx, {
   type: 'doughnut',
   data: {
-    labels: ['à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸”à¸³à¹€à¸™à¸´à¸™à¸à¸²à¸£', 'à¸”à¸³à¹€à¸™à¸´à¸™à¸à¸²à¸£à¹à¸¥à¹‰à¸§'],
+    labels: ['ยังไม่ดำเนินการ', 'ดำเนินการแล้ว'],
     datasets: [{
       data: [100 - initialRound.progress, initialRound.progress],
       backgroundColor: ['#eeeeee', '#36BA98'],
@@ -438,7 +438,7 @@ const progressChart = new Chart(progressCtx, {
 });
 
 
-// à¸à¸£à¸²à¸Ÿà¸„à¹ˆà¸²à¹€à¸‰à¸¥à¸µà¹ˆà¸¢à¸„à¸§à¸²à¸¡à¸ªà¸³à¹€à¸£à¹‡à¸ˆ
+// กราฟค่าเฉลี่ยความสำเร็จ
 const successCtx = document.getElementById('successChart').getContext('2d');
 const totalProjects = initialRound.count;
 const successProjects = initialRound.success.reduce((a, b) => a + b, 0);
@@ -448,7 +448,7 @@ const unsuccessfulProjects = totalProjects - successProjects;
 const successChart = new Chart(successCtx, {
   type: 'doughnut',
   data: {
-    labels: ['à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆ', 'à¸ªà¸³à¹€à¸£à¹‡à¸ˆà¹à¸¥à¹‰à¸§'],
+    labels: ['ยังไม่สำเร็จ', 'สำเร็จแล้ว'],
     datasets: [{
       data: [(unsuccessfulProjects / totalProjects) * 100, (successProjects / totalProjects) * 100],
       backgroundColor: ['#eeeeee', '#37B7C3'],
@@ -507,7 +507,7 @@ type: 'bar',
 data: {
   labels: problemData.map(p => p.problem),
   datasets: [{
-    label: '% à¸‚à¸­à¸‡à¸›à¸±à¸à¸«à¸²',
+    label: '% ของปัญหา',
     data: problemData.map(problem => problem.percentage),
     backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
   }]
@@ -542,12 +542,12 @@ const stackedBarChart = new Chart(stackedBarCtx, {
   data: {
     labels: Object.keys(initialRound.smartkeycount),
     datasets: [{
-      label: 'à¹‚à¸„à¸£à¸‡à¸à¸²à¸£à¸—à¸µà¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆà¹à¸¥à¹‰à¸§ ',
+      label: 'โครงการที่สำเร็จแล้ว ',
       data: Object.values(initialRound.success),
       backgroundColor: '#37B7C3'
     },
     {
-      label: 'à¹‚à¸„à¸£à¸‡à¸à¸²à¸£à¸—à¸µà¹ˆà¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆ',
+      label: 'โครงการที่ยังไม่สำเร็จ',
       data: Object.values(initialRound.unsuccess),
       backgroundColor: '#cccccc'
     }
@@ -592,10 +592,10 @@ const avgProgressCtx = document.getElementById('avgprogress').getContext('2d');
 
 const entries = Object.entries(initialRound.averageProgressPerSmart);
 
-// à¸ˆà¸±à¸”à¹€à¸£à¸µà¸¢à¸‡à¸­à¸²à¸£à¹Œà¹€à¸£à¸¢à¹Œà¸•à¸²à¸¡à¸„à¹ˆà¸² value
+// จัดเรียงอาร์เรย์ตามค่า value
 const sortedEntries = entries.sort((a, b) => b[1] - a[1]);
 
-// à¹à¸›à¸¥à¸‡à¸­à¸²à¸£à¹Œà¹€à¸£à¸¢à¹Œà¸—à¸µà¹ˆà¸ˆà¸±à¸”à¹€à¸£à¸µà¸¢à¸‡à¹à¸¥à¹‰à¸§à¸à¸¥à¸±à¸šà¹€à¸›à¹‡à¸™à¸§à¸±à¸•à¸–à¸¸ (à¸–à¹‰à¸²à¸•à¹‰à¸­à¸‡à¸à¸²à¸£)
+// แปลงอาร์เรย์ที่จัดเรียงแล้วกลับเป็นวัตถุ (ถ้าต้องการ)
 const sortedObject = Object.fromEntries(sortedEntries);
 
 const labels = Object.keys(sortedObject);
@@ -624,7 +624,7 @@ type: 'treemap',
 data: {
   datasets: [
     {
-      label: "à¸„à¸§à¸²à¸¡à¸„à¸·à¸šà¸«à¸™à¹‰à¸²à¹‚à¸„à¸£à¸‡à¸à¸²à¸£à¸•à¸²à¸¡à¹à¸œà¸™",
+      label: "ความคืบหน้าโครงการตามแผน",
       data: data,
       backgroundColor: function (ctx) {
                       return colorFromValue(ctx.dataset.data[ctx.dataIndex].v);
@@ -652,7 +652,7 @@ options: {
     },
     tooltip: {
       callbacks: {
-        label: (context) => `à¸„à¹ˆà¸²à¹€à¸‰à¸¥à¸µà¹ˆà¸¢à¸„à¸§à¸²à¸¡à¸ªà¸³à¹€à¸£à¹‡à¸ˆ: ${context.raw.v}%`,
+        label: (context) => `ค่าเฉลี่ยความสำเร็จ: ${context.raw.v}%`,
       },
     },
   },
