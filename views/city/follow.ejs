@@ -3,7 +3,9 @@
 
 
 <head>
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
   <%- include('../include/head.ejs') %>
   <title>
     <%= pageTitle %>
@@ -87,9 +89,9 @@
       <img src="/img/banner.png" alt="Banner Image" class="w-full">
     </div>
 
-<!--  รายการความคืบหน้ารายโครงการเมืองที่ได้รับตราสัญลักษณ์ -->
+
     <div class="text-center mt-3">
-      <h1 class="text-4xl">
+      <h1 class="text-4xl font-bold">
         รายงานความคืบหน้า<span class="text-[#04b2a1]">เมืองที่ได้รับตราสัญลักษณ์</span>
       </h1>
     </div>
@@ -103,7 +105,7 @@
 
 
       <div class="w-11/12 lg:w-4/5 mx-auto shadow-lg rounded-2xl bg-yellow-400 mt-3">
-        <p class="text-center pt-5"><span class="text-white font-bold">*** โปรดอ่าน:</span>
+        <p class="text-center pt-5"><span class="text-white font-bold font-th-sarabun">*** โปรดอ่าน:</span>
           <span class="text-white">สถานะ <span class="inline-block w-4 h-4 bg-red-500 rounded-full border border-red-500"></span> หมายถึง ยังไม่ทำการกรอกฟอร์ม -</span>
           <span class="text-white">สถานะ <span class="inline-block w-4 h-4 bg-yellow-500 rounded-full border border-yellow-500"></span> หมายถึงฉบับร่าง -</span>
           <span class="text-white">สถานะ <span class="inline-block w-4 h-4 bg-green-500 rounded-full border border-green-500"></span> หมายถึง ดำเนินการแล้ว</span>
