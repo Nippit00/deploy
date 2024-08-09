@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <title>form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .font-th-sarabun {
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        #spinner-container {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 9999;
+            overflow: hidden;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #static-image {
+            width: 300px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        #spinner {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 16px;
+            height: 16px;
+            background-color: #3498db;
+            border-radius: 50%;
+            animation: blink 1.4s infinite both;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes blink {
+
+            0%,
+            80%,
+            100% {
+                opacity: 0;
+            }
+
+            40% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 font-th-sarabun">
+    <div id="spinner-container">
+        <img id="static-image" src="/img/favi.png" alt="Loading...">
+        <div id="spinner">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+    <div>
+        <%- include('../include/ad-navbar') %>
+    </div>
+    <button onclick="goBack()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-5 mt-5">
+        ย้อนกลับ
+    </button>
+
+    <script>
+        function goBack() {
+            window.location.href = '/admin/city/<%=formdata[0].cityID%>';
+        }
+    </script>
+
+    <div class="w-4/5 mx-auto border-2 rounded-xl bg-white p-8 shadow-lg">
+        <div class="text-center text-2xl text-teal-600 font-semibold mb-5">
+            <% if (formdata && formdata.length> 0 && formdata[0].cityName) { %>
+                <div>
+                    <%= formdata[0].cityName %>
+                </div>
+                <% } else { %>
+                    <div>ไม่พบข้อมูลเมือง</div>
+                    <% } %>
+        </div>
+
+        <div class="text-center text-xl font-medium mb-5">
+            <% if (formdata && formdata.length> 0 && formdata[0].solutionName) { %>
+                <h6>ชื่อโครงการ: <%= formdata[0].solutionName %>
+                </h6>
+                <% } else { %>
+                    <h6>ชื่อโครงการ: N/A</h6>
+                    <% } %>
+        </div>
+
+        <div class="flex flex-wrap mt-5">
+            <div class="w-full md:w-1/2 mb-5 md:mb-0">
+                <p class="text-lg font-semibold">รายละเอียดโครงการ:</p>
+                <p><strong>ชื่อโครงการ:</strong>
+                    <%= !formdata || formdata.length===0 ? "ไม่พบข้อมูล" : formdata[0].solutionName %>
+                </p>
+                <p><strong>รหัสโครงการ:</strong>
+                    <%= !formdata || formdata.length===0 ? "ไม่พบข้อมูล" : formdata[0].solutionID %>
+                </p>
+                <p><strong>Smart:</strong>
+                    <%= !formdata || formdata.length===0 ? "ไม่พบข้อมูล" : formdata[0].smart %>
+                </p>
+                <p><strong>แหล่งเงินทุน:</strong>
+                    <%= !formdata || formdata.length===0 ? "ไม่พบข้อมูล" : "" %>
+                </p>
+                <p><strong>เงินทุน:</strong>
+                    <%= !formdata || formdata.length===0 ? "ไม่พบข้อมูล" : (formdata[0].funds *
+                        1000000).toLocaleString('th-TH') %> บาท
+                </p>
+            </div>
+
+            <div class="w-full md:w-1/2">
+                <p class="text-lg font-semibold">ตัวชี้วัด:</p>
+                <ul class="list-disc list-inside">
+                    <% kpiQ.forEach(item=> { %>
+                        <li class="ml-5 text-gray-800">
+                            <%= item.kpiName %>
+                        </li>
+                        <% }); %>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-10 w-4/5 mx-auto border-2 rounded-xl bg-white p-8 shadow-lg mb-5">
+        <form action="/ad_saveForm/<%= formdata[0].solutionID %>/<%= round %>" method="post" id="reportForm">
+            <div class="mt-5" id="Q1">
+                <input type="hidden" name="Q1" value="สถานะ">
+                <label for="status" class="block font-medium mb-2 text-teal-600 text-xl">สถานะ:</label>
+                <p class="text-gray-500 mb-2">สถานะปัจจุบันของการดำเนินโครงการ</p>
+                <select id="status" name="A1" class="block w-full p-2 border rounded-md" required
+                    onchange="toggleFields()">
+                    <option value="ยังไม่ดำเนินโครงการ" <%=(dataOld.find(d=> d.questionID == '1')?.ans ?? '') ===
+                        'ยังไม่ดำเนินโครงการ' ? 'selected' : '' %>>ยังไม่ดำเนินโครงการ</option>
+                    <option value="ล่าช้ากว่าแผน" <%=(dataOld.find(d=> d.questionID == '1')?.ans ?? '') ===
+                        'ล่าช้ากว่าแผน' ? 'selected' : '' %>>ล่าช้ากว่าแผน</option>
+                    <option value="ตามแผน" <%=(dataOld.find(d=> d.questionID == '1')?.ans ?? '') === 'ตามแผน' ?
+                        'selected' : '' %>>ตามแผน</option>
+                    <option value="เร็วกว่าแผน" <%=(dataOld.find(d=> d.questionID == '1')?.ans ?? '') === 'เร็วกว่าแผน'
+                        ? 'selected' : '' %>>เร็วกว่าแผน</option>
+                    <option value="ยกเลิก" <%=(dataOld.find(d=> d.questionID == '1')?.ans ?? '') === 'ยกเลิก' ?
+                        'selected' : '' %>>ยกเลิก</option>
+                </select>
+            </div>
+
+            <div class="mt-5" id="Q2">
+                <input type="hidden" name="Q2" value="ความก้าวหน้าโครงการ">
+                <label for="progress" class="block text-teal-600 font-medium mb-2 text-xl">ความก้าวหน้าโครงการ:</label>
+                <p class="text-gray-500 mb-2">ร้อยละของความก้าวหน้าภาพรวมในการดำเนินโครงการ</p>
+                <select id="progress" name="A2" class="block w-full p-2 border rounded-md"
+                    onchange="toggleFileUpload()">
+                    <option value="">ระบุ % ความก้าวหน้า</option>
+                    <% for (let i=0; i <=100; i +=5) { %>
+                        <option value="<%= i %>" <%=(dataOld.find(d=> d.questionID == '2')?.ans ?? '') == i ? 'selected'
+                            : '' %>><%= i %>%</option>
+                        <% } %>
+                </select>
+            </div>
+
+            <!-- <div id="fileUploadContainer" class="mt-5" style="display: none;">
+                
+                <label for="fileUpload" class="block text-teal-600 font-medium mb-2 text-xl">แนบรูปภาพ:</label>
+                <p class="text-gray-500 mb-2">แนบภาพประกอบการดำเนินโครงการเพื่อเป็นหลักฐานแสดงความสำเร็จของโครงการ</p>
+                <input type="file" id="fileUpload"  accept="image/png, image/gif, image/jpeg"
+                    class="block w-full p-2 border rounded-md">
+            </div> -->
+
+            <div class="mt-5" id="Q4">
+                <input type="hidden" name="Q4" value="ผลการดำเนินงาน">
+                <label for="operation" class="block text-teal-600 font-medium mb-2 text-xl">ผลการดำเนินงาน:</label>
+                <p class="text-gray-500 mb-2">ระบุผลสำเร็จหรือผลประโยชน์ที่เกิดขึ้นจากการดำเนินโครงการ</p>
+                <input type="text" id="operation" name="A4" placeholder="กรอกข้อความ...."
+                    value="<%= dataOld.find(d => d.questionID == '4')?.ans ?? '' %>"
+                    class="block w-full p-2 border rounded-md">
+            </div>
+
+            <div class="mt-5" id="Q5">
+                <input type="hidden" name="Q5" value="ประเภทปัญหา">
+                <label for="problem_type" class="block text-teal-600 font-medium mb-2 text-xl">ประเภทปัญหา:</label>
+                <p class="text-gray-500 mb-2">ระบุประเภทปัญหาที่พบจากการดำเนินโครงการ</p>
+                <select id="problem_type" name="A5" class="block w-full p-2 border rounded-md">
+                    <option value="" <%=(dataOld.find(d=> d.questionID == '5')?.ans ?? '') === 'null' ? 'selected' :
+                        '' %>>ระบุประเภทปัญหา</option>
+                    <option value="เทคนิค" <%=(dataOld.find(d=> d.questionID == '5')?.ans ?? '') === 'เทคนิค' ?
+                        'selected' : '' %>>เทคนิค</option>
+                    <option value="การเงิน" <%=(dataOld.find(d=> d.questionID == '5')?.ans ?? '') === 'การเงิน' ?
+                        'selected' : '' %>>การเงิน</option>
+                    <option value="การจัดการ" <%=(dataOld.find(d=> d.questionID == '5')?.ans ?? '') === 'การจัดการ' ?
+                        'selected' : '' %>>การจัดการ</option>
+                    <option value="ไม่มีปัญหา/อุปสรรค" <%=(dataOld.find(d=> d.questionID == '5')?.ans ?? '') ===
+                        'ไม่มีปัญหา/อุปสรรค' ? 'selected' : '' %>>ไม่มีปัญหา/อุปสรรค</option>
+                    <option value="ไม่มีงบประมาณ" <%=(dataOld.find(d=> d.questionID == '5')?.ans ?? '') ===
+                        'ไม่มีงบประมาณ' ? 'selected' : '' %>>ไม่มีงบประมาณ</option>
+                    <option value="ขาดแคลนบุคลากร" <%=(dataOld.find(d=> d.questionID == '5')?.ans ?? '') ===
+                        'ขาดแคลนบุคลากร' ? 'selected' : '' %>>ขาดแคลนบุคลากร</option>
+                    <option value="เปลี่ยนแปลงด้านนโยบาย" <%=(dataOld.find(d=> d.questionID == '5')?.ans ?? '') ===
+                        'เปลี่ยนแปลงด้านนโยบาย' ? 'selected' : '' %>>เปลี่ยนแปลงด้านนโยบาย</option>
+                    <option value="ปัญหาด้านการใช้เทคโนโลยี" <%=(dataOld.find(d=> d.questionID == '5')?.ans ?? '') ===
+                        'ปัญหาด้านการใช้เทคโนโลยี' ? 'selected' : '' %>>ปัญหาด้านการใช้เทคโนโลยี</option>
+                    <option value="ข้อจำกัดด้านกฏระเบียบ" <%=(dataOld.find(d=> d.questionID == '5')?.ans ?? '') ===
+                        'ข้อจำกัดด้านกฏระเบียบ' ? 'selected' : '' %>>ข้อจำกัดด้านกฏระเบียบ</option>
+                    <option value="ขาดผู้ใช้งาน/ขาดการสร้างความตระหนักรู้แก่ประชาชน" <%=(dataOld.find(d=> d.questionID
+                        == '5')?.ans ?? '') === 'ขาดผู้ใช้งาน/ขาดการสร้างความตระหนักรู้แก่ประชาชน' ? 'selected' : ''
+                        %>>ขาดผู้ใช้งาน/ขาดการสร้างความตระหนักรู้แก่ประชาชน</option>
+                    <option value="ไม่มีเจ้าภาพในการดำเนินกิจกรรม" <%=(dataOld.find(d=> d.questionID == '5')?.ans ?? '')
+                        === 'ไม่มีเจ้าภาพในการดำเนินกิจกรรม' ? 'selected' : '' %>>ไม่มีเจ้าภาพในการดำเนินกิจกรรม
+                    </option>
+                    <option value="Infrastructure ไม่เพียงพอเพื่อรองรับการดำเนินการ" <%=(dataOld.find(d=> d.questionID
+                        == '5')?.ans ?? '') === 'Infrastructure ไม่เพียงพอเพื่อรองรับการดำเนินการ' ? 'selected' : ''
+                        %>>Infrastructure ไม่เพียงพอเพื่อรองรับการดำเนินการ</option>
+                    <option value="อื่น ๆ" <%=(dataOld.find(d=> d.questionID == '5')?.ans ?? '') === 'อื่น ๆ' ?
+                        'selected' : '' %>>อื่น ๆ</option>
+                </select>
+            </div>
+
+            <div class="mt-5" id="Q6">
+                <input type="hidden" name="Q6" value="ปัญหาอื่น ๆ">
+                <label for="result" class="block text-teal-600 font-medium mb-2 text-xl">ปัญหาอื่นๆ:</label>
+                <p class="text-gray-500 mb-2">ระบุปัญหาที่พบจากการดำเนินโครงการ นอกเหนือจากที่กำหนดไว้</p>
+                <input type="text" id="result" name="A6" placeholder="กรอกข้อความ...."
+                    value="<%= dataOld.find(d => d.questionID == '6')?.ans ?? '' %>"
+                    class="block w-full p-2 border rounded-md">
+            </div>
+
+            <div class="mt-5" id="Q7">
+                <input type="hidden" name="Q7" value="ผลลัพธ์">
+                <label for="result" class="block text-teal-600 font-medium mb-2 text-xl">ผลลัพธ์:</label>
+                <p class="text-gray-500 mb-2">ผลที่เกิดขึ้นต่อยอดจากผลผลิต หรือผลระยะยาวซึ่งเกิดเป็นผลจุดหมายปลายทาง
+                    หรือผลต่อเนื่องจากผลกระทบ</p>
+                <input type="text" id="result" name="A7" placeholder="กรอกข้อความ...."
+                    value="<%= dataOld.find(d => d.questionID == '7')?.ans ?? '' %>"
+                    class="block w-full p-2 border rounded-md">
+            </div>
+
+            <div class="mt-5" id="Q8">
+                <input type="hidden" name="Q8" value="ปัญหา/อุปสรรค">
+                <label for="problem" class="block text-teal-600 font-medium mb-2 text-xl">ปัญหา/อุปสรรค:</label>
+                <p class="text-gray-500 mb-2">อธิบายรายละเอียดของปัญหาที่พบจากการดำเนินโครงการ</p>
+                <input type="text" id="problem" name="A8" placeholder="กรอกข้อความ...."
+                    value="<%= dataOld.find(d => d.questionID == '8')?.ans ?? '' %>"
+                    class="block w-full p-2 border rounded-md">
+            </div>
+
+            <div class="mt-5" id="Q9">
+                <input type="hidden" name="Q9" value="แนวทางแก้ไข">
+                <label for="solution" class="block text-teal-600 font-medium mb-2 text-xl">แนวทางแก้ไข:</label>
+                <p class="text-gray-500 mb-2">ระบุวิธีการแก้ไขปัญหาที่พบจากการดำเนินโครงการ</p>
+                <input type="text" id="solution" name="A9" placeholder="กรอกข้อความ...."
+                    value="<%= dataOld.find(d => d.questionID == '9')?.ans ?? '' %>"
+                    class="block w-full p-2 border rounded-md">
+            </div>
+
+            <div class="mt-5" id="Q10">
+                <input type="hidden" name="Q10" value="หมายเหตุ">
+                <label for="note" class="block text-teal-600 font-medium mb-2 text-xl">หมายเหตุ:</label>
+                <p class="text-gray-500 mb-2">ผลการดำเนินการอื่นๆที่ต้องการรายงาน</p>
+                <input type="text" id="note" name="A10" placeholder="กรอกข้อความ...."
+                    value="<%= dataOld.find(d => d.questionID == '10')?.ans ?? '' %>"
+                    class="block w-full p-2 border rounded-md">
+            </div>
+            <div class="mt-5" id="Q11">
+                <input type="hidden" name="Q11" value="รูปแบบการลงทุน">
+                <label for="fund" class="block text-teal-600 font-medium mb-2 text-xl">รูปแบบการลงทุน:</label>
+                <select id="fund" name="A11" class="block w-full p-2 border rounded-md">
+                    <option value="" <%= (dataOld.find(d => d.questionID == '11')?.ans ?? '') === '' ? 'selected' : '' %>>ระบุการลงทุน</option>
+                    <option value="รัฐบาล" <%= (dataOld.find(d => d.questionID == '11')?.ans ?? '') === 'รัฐบาล' ? 'selected' : '' %>>รัฐบาล</option>
+                    <option value="เอกชน" <%= (dataOld.find(d => d.questionID == '11')?.ans ?? '') === 'เอกชน' ? 'selected' : '' %>>เอกชน</option>
+                    <option value="ลงทุนรวมกัน" <%= (dataOld.find(d => d.questionID == '11')?.ans ?? '') === 'ลงทุนรวมกัน' ? 'selected' : '' %>>ลงทุนรวมกัน</option>
+                </select>
+                
+            </div>
+            <div class="mt-5" id="Q12">
+                <input type="hidden" name="Q12" value="งบประมาณที่ใช้ในการดำเนินการ">
+                <label for="bubget"
+                    class="block text-teal-600 font-medium mb-2 text-xl">งบประมาณที่ใช้ในการดำเนินการ:</label>
+                <p class="text-gray-500 mb-2">ระบุงบประมาณที่เกิดขึ้นจากการดำเนินโครงการ</p>
+                <input type="text" id="bubget" name="A12" placeholder="กรอกข้อความ...."
+                    value="<%= dataOld.find(d => d.questionID == '12')?.ans ?? '' %>"
+                    class="block w-full p-2 border rounded-md">
+            </div>
+
+            <% question.forEach((item, index)=> {
+                if (index >= 12) { %>
+                <div class="mt-5" id="Q<%= item.questionID %>">
+                    <input type="hidden" value="<%= item.question %>" name="Q<%= item.questionID %>">
+                    <label for="other" class="block text-teal-600 font-medium mb-2 text-xl">
+                        <%= item.question %>:
+                    </label>
+                    <p class="text-gray-500 mb-2">
+                        <%= item.Description %>
+                    </p>
+                    <input type="text" id="other" name="A<%= item.questionID %>" placeholder="กรอกข้อความ...."
+                        value="<%= dataOld.find(d => d.questionID == item.questionID)?.ans ?? '' %>"
+                        class="block w-full p-2 border rounded-md">
+                </div>
+                <% } }); %>
+                <% if(formdata[0].solutionID.includes("CDP02")){ %>
+                    <div  class="mt-5" >
+                        <input type="hidden" name="Excel" value="FileUpload">
+                        <label for="excel" class="block text-teal-600 font-medium mb-2 text-xl">แนบไฟล์ excel:</label>
+                        <p class="text-gray-500 mb-2">แนบไฟล์ excel CDP2</p>
+                        <input type="file"  name="excel" accept=".xlsx, .xls "
+                            class="block w-full p-2 border rounded-md">
+                    </div>
+                    <div class="container mx-auto p-4">
+                        <label class="block text-teal-600 font-medium mb-2 text-xl">
+                            downloadไฟล์ excel 
+                            <a href="https://docs.google.com/spreadsheets/d/14Z7Ah91l4-SCc6E61eTzniGgZQxc60v9eRcMPjQkwYc/edit?usp=sharing" 
+                               class="inline-flex items-center px-4 py-2 bg-teal-600 text-white text-xl font-medium rounded-md hover:bg-teal-700">
+                                ตรงนี้ 
+                                <i class="fas fa-download ml-2"></i>
+                            </a>
+                        </label>
+                    </div>
+                
+                    <% } %>
+                <% if(formdata[0].solutionID.includes("CDP03")){ %>
+                    
+                    <div  class="mt-5" >
+                        <input type="hidden" name="Excel" value="FileUpload">
+                        <label for="excel" class="block text-teal-600 font-medium mb-2 text-xl">แนบไฟล์ excel :</label>
+                        <p class="text-gray-500 mb-2">แนบไฟล์ excel CDP3</p>
+                        <input type="file"  name="excel" accept=".xlsx, .xls "
+                            class="block w-full p-2 border rounded-md">
+                            
+
+                    </div>
+                    <div class="container mx-auto p-4">
+                        <label class="block text-teal-600 font-medium mb-2 text-xl">
+                            downloadไฟล์ excel 
+                            <a href="https://docs.google.com/spreadsheets/d/1bKHx-VA57DTbgWzTUKZ504fkdmrbWr_AVk9ikkHHVvA/edit?usp=sharing" 
+                               class="inline-flex items-center px-4 py-2 bg-teal-600 text-white text-xl font-medium rounded-md hover:bg-teal-700">
+                                ตรงนี้ 
+                                <i class="fas fa-download ml-2"></i>
+                            </a>
+                        </label>
+                    </div>
+                
+                    <% } %>
+
+                
+                <% if (kpiQ && kpiQ.length > 0) { %>
+                    <h2 class="text-xl font-semibold text-center mt-10 mb-5">รายงานผลการดำเนินงาน (ตัวชี้วัด)</h2>
+                  <% } %>
+                  
+                   
+                    <div id="KPI-Containner">
+                        <% kpiQ.forEach(item=> { %>
+                            <div class="mb-4" id="KPI<%= item.kpiID %>">
+                                <label for="<%= item.kpiID %>" class="block text-teal-600 font-medium mt-5 text-xl">
+                                    <%= item.kpiName %>: <span class="text-red-500">*</span>
+                                </label>
+                                <% if (item.goal==0) { %>
+                                    <label class="mr-4">Yes</label>
+                                    <input type="radio" name="<%= item.kpiID %>" value="Yes" <%=item.ans==='Yes'
+                                        ? 'checked' : '' %> class="mr-4">
+                                    <label class="mr-4">No</label>
+                                    <input type="radio" name="<%= item.kpiID %>" value="No" <%=item.ans==='No'
+                                        ? 'checked' : '' %> class="mr-4">
+                                    <% } else { %>
+                                       
+                                        <input type="number" placeholder="<%= item.unit %>" id="A<%= item.kpiID %>"
+                                            name="<%= item.kpiID %>" step="0.01"
+                                            value="<%= item.ans %>"
+                                            class="block w-full p-2 border rounded-md">
+                                       
+                                        <% } %>
+                            </div>
+                            <% }); %>
+                    </div>
+
+
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <input type="hidden" id="currentDateTime" name="currentDateTime" value="">
+                    <input type="hidden" name="round" value="<%= round %>">
+
+                    <!-- <p class="text-center text-red-500 mt-5">*** โปรดอ่าน: กรุณากดบันทึกทุกครั้งเพื่อบันทึกคำตอบไว้ มิฉะนั้นต้องกรอกฟอร์มใหม่ ***
+                    </p>
+                    <p class="text-center text-red-500 mb-5">*** เมื่อกรอกครบเเล้วต้องกดส่งรายงาน เพื่อเป็นการส่งฟอร์ม ***</p> -->
+                    <div class="text-center">
+                        <button type="submit" id="saveButton"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">บันทึก</button>
+                        <% if( formdata[0].status==2 ){%>
+                            <button  id="ApproveButton"
+                            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">อนุมัติ</button>
+                        <%} else if(formdata[0].status==3){%>
+                            <button  id="CanclesubmitButton"
+                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">ยกเลิกอนุมัติ</button>
+                        <%} %>
+                        
+                    </div>
+        </form>
+    </div>
+    <%- include('../include/ad-footer.ejs') %>
+</body>
+
+<script>
+    window.onload = function () {
+        document.getElementById('spinner-container').style.display = 'none';
+    };
+
+    window.addEventListener('DOMContentLoaded', (event) => {
+        document.getElementById('spinner-container').style.display = 'flex';
+    });
+
+    // document.getElementById('submitButton').addEventListener('click', function (event) {
+    //     let isValid = true;
+    //     let firstInvalidElement = null;
+    //     const requiredFields = document.querySelectorAll('[name^="A"]');
+    //     const kpiFields = document.getElementById('KPI-Containner').querySelectorAll('input');
+    //     const status = document.getElementById('status').value;
+
+    //     if (status !== 'ยกเลิก') {
+    //         requiredFields.forEach(field => {
+    //             const element = field;
+    //             if (element && !element.value.trim()) {
+    //                 isValid = false;
+    //                 element.style.border = '2px solid red';
+    //                 if (!firstInvalidElement) {
+    //                     firstInvalidElement = element;
+    //                 }
+    //             } else if (element) {
+    //                 element.style.border = '';
+    //             }
+    //         });
+    //         if(!document.getElementById('fileUpload').value.trim()){
+    //             isValid = false;
+    //             document.getElementById('fileUpload').style.border = '2px solid red';
+    //                 if (!firstInvalidElement) {
+    //                     firstInvalidElement = document.getElementById('fileUpload');
+    //                 }
+    //         }
+
+    //         kpiFields.forEach(field => {
+    //             if (field.type === 'radio') {
+    //                 const radioGroup = document.getElementsByName(field.name);
+    //                 const isChecked = Array.from(radioGroup).some(radio => radio.checked);
+    //                 if (!isChecked) {
+    //                     isValid = false;
+    //                     radioGroup.forEach(radio => radio.parentNode.style.border = '2px solid red');
+    //                     if (!firstInvalidElement) {
+    //                         firstInvalidElement = radioGroup[0];
+    //                     }
+    //                 } else {
+    //                     radioGroup.forEach(radio => radio.parentNode.style.border = '');
+    //                 }
+    //             } else if (field.type === 'number' && !field.value.trim()) {
+                    
+    //                 isValid = false;
+    //                 field.style.border = '2px solid red';
+    //                 if (!firstInvalidElement) {
+    //                     firstInvalidElement = field;
+    //                 }
+    //             } else {
+    //                 field.style.border = '';
+    //             }
+    //         });
+    //     }
+    //     else {
+    //         requiredFields.forEach(field => {
+    //             const element = field;
+
+    //             if (element.name === 'A1' || element.name === 'A2'|| element.id === 'fileUpload' || element.name === 'A5' || element.name === 'A8') {
+    //                 console.log(element.value.trim())
+    //                 if (!element.value.trim()) {
+    //                     isValid = false;
+    //                     element.style.border = '2px solid red';
+    //                     if (!firstInvalidElement) {
+    //                         firstInvalidElement = element;
+    //                     }
+    //                 }
+    //                 else{
+    //                         element.style.border = '';
+    //                 }
+    //             }
+    //         });
+
+    //     }
+
+    //     if (!isValid) {
+    //         alert('กรุณากรอกข้อมูลให้ครบทุกช่อง');
+    //         if (firstInvalidElement) {
+    //             firstInvalidElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    //             firstInvalidElement.focus();
+    //         }
+    //         event.preventDefault();
+    //     }
+
+    //     if (isValid) {
+    //         event.preventDefault();
+    //         reportForm.action = "/formcheck/<%=formdata[0].solutionID%>/<%= round %>";
+    //         reportForm.submit();
+    //     }
+    // });
+
+
+
+    function toggleFileUpload() {
+        const progress = document.getElementById('progress').value;
+        const fileUploadContainer = document.getElementById('fileUploadContainer');
+        if (progress == '100') {
+            fileUploadContainer.style.display = 'block';
+        } else {
+            fileUploadContainer.style.display = 'none';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const successParam = urlParams.get('success');
+
+        if (successParam === 'true') {
+            Swal.fire({
+                title: "บันทึกสำเร็จ!",
+                text: "บันทึกฉบับร่างสำเร็จ",
+                icon: "success",
+            }).then(function () {
+                // Make sure the URL redirection is correct
+                window.location.href = '/admin/city/<%=formdata[0].cityID%>';
+            });
+        }
+
+        
+
+        const urlupdateParams = new URLSearchParams(window.location.search);
+        const updatesuccess = urlupdateParams.get('updatesuccess');
+
+        if (updatesuccess === 'true') {
+            Swal.fire({
+                title: "อัพเดตสำเร็จ!",
+                text: "เปลี่ยนสถานะสำเร็จ",
+                icon: "success",
+            }).then(function () {
+                // Make sure the URL redirection is correct
+                window.location.href = '/admin/city/<%=formdata[0].cityID%>';
+            });
+        }
+
+        const urlcancleParams = new URLSearchParams(window.location.search);
+        const canclesuccess = urlcancleParams.get('canclesuccess');
+
+        if (updatesuccess === 'true') {
+            Swal.fire({
+                title: "อัพเดตสำเร็จ!",
+                text: "เปลี่ยนสถานะสำเร็จ",
+                icon: "success",
+            }).then(function () {
+                // Make sure the URL redirection is correct
+                window.location.href = '/admin/city/<%=formdata[0].cityID%>';
+            });
+        }
+        document.getElementById('ApproveButton').addEventListener('click', function (event) {
+            reportForm.action = "/Approve/<%=formdata[0].solutionID%>/<%=round%>";
+        });
+        document.getElementById('CancleButton').addEventListener('click', function (event) {
+            reportForm.action = "/CancleApprove/<%=formdata[0].solutionID%>/<%=round%>";
+        });
+    });
+
+    function toggleFields() {
+        const status = document.getElementById('status').value;
+        const fields = document.querySelectorAll('[id^="Q"]');
+        fields.forEach(field => {
+            if (status === 'ยกเลิก') {
+                if (field.id !== 'Q1' && field.id !== 'Q2' && field.id !== 'Q5' && field.id !== 'Q8') {
+                    field.style.display = 'none';
+                } else {
+                    field.style.display = '';
+                }
+            } else {
+                field.style.display = '';
+            }
+        });
+        const kpi = document.querySelectorAll('[id^="KPI"]');
+        kpi.forEach(field => {
+            if (status === 'ยกเลิก') {
+
+                field.style.display = 'none';
+            }
+            else {
+                field.style.display = '';
+            }
+        })
+    }
+
+    document.getElementById('status').addEventListener('change', toggleFields);
+    toggleFields(); // Call on page load to set the initial state
+
+    // console.log(document.querySelectorAll('[name^="A"]'))
+</script>
+
+</html>

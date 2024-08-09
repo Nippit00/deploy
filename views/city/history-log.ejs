@@ -1,0 +1,36 @@
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Log Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <%- include('../component/navbar.ejs') %>
+    <h1 class="text-center text-2xl font-bold my-2">Login Log Page</h1>
+    <div class="container mx-auto">
+        <table id="logTable" class="table-auto min-w-full">
+            <thead>
+                <tr>
+                    <th class="border px-4 py-2 text-left"></th>
+                    <th class="border px-4 py-2 text-left">Login Time</th>
+                    <th class="border px-4 py-2 text-left">Logout Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% let index = 1; %>
+                <% data.forEach(entry => { %>
+                <tr>
+                    <td class="border px-4 py-2 text-left"><%= index++ %></td>
+                    <td class="border px-4 py-2 text-left"><%= entry.login_time %></td>
+                    <td class="border px-4 py-2 text-left"><%= entry.logout_time || 'Not logged out yet' %></td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+    
+</body>
+</html> -->

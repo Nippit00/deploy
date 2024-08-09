@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Admin - <%= pageTitle %></title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 font-sans">
+    <%- include('include/ad-navbar.ejs') %>
+
+    <div class="container mx-auto p-6 bg-white mt-6 rounded-lg shadow-lg">
+        <div class="flex flex-wrap ">
+            <div class="w-full md:w-2/5 p-4">
+                <div class="bg-white rounded-lg shadow-lg p-4">
+                    <canvas id="myPieChart"></canvas>
+                </div>
+            </div>
+            <div class="w-full  md:w-1/3 mx-3 flex items-center h-[36rem] justify-center">
+                <div class="p-4 rounded-lg shadow-lg w-full h-full overflow-y-auto">
+                    <% date.forEach(function(item) { %>
+                    <div class="bg-white p-4 rounded-lg shadow-lg mb-4">
+                        <p class="font-semibold">วันประกาศเมืองอัจฉริยะ: <%= new Date(item.Date).toLocaleDateString('th-TH', {
+                                year: 'numeric', month: 'long', day: 'numeric'
+                            }) %></p>
+                        <p class="font-semibold">เปิดฟอร์ม: <%= new Date(item.open).toLocaleDateString('th-TH', {
+                                year: 'numeric', month: 'long', day: 'numeric'
+                            }) %></p>
+                        <p class="font-semibold">ปิดฟอร์ม: <%= new Date(item.close).toLocaleDateString('th-TH', {
+                                year: 'numeric', month: 'long', day: 'numeric'
+                            }) %></p>
+                        <p class="font-semibold">รอบที่เปิด: <%= item.round %></p>
+                    </div>
+                    <% }) %>
+                </div>
+            </div>
+            <div class="w-full md:w-1/4">
+                <div class="p-4 bg-white shadow-lg rounded-lg">
+                    <h1>จำนวนเมืองที่กรอกเสร็จแล้ว</h1>
+                    <br />
+                    <p>กรอกเสร็จแล้ว : 5 เมือง</p>
+                    <p>กรอกยังไม่เสร็จ : 10 เมือง</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <div class="overflow-y-scroll max-h-dvh bg-gray-100 p-4 rounded-lg shadow-lg">
+                <table class="table-auto w-full bg-white rounded-lg shadow-lg">
+                    <thead class="bg-gray-200">
+                        <tr>
+                            <th class="p-4 text-left sortable" data-column="cityID" onclick="sortTable('cityID')">รหัสเมือง <span class="sort-indicator"></span></th>
+                            <th class="p-4 text-left sortable" data-column="province" onclick="sortTable('province')">จังหวัด <span class="sort-indicator"></span></th>
+                            <th class="p-4 text-left sortable" data-column="cityName" onclick="sortTable('cityName')">ชื่อเมือง <span class="sort-indicator"></span></th>
+                            <th class="p-4 text-left sortable" data-column="date" onclick="sortTable('date')">วันประกาศเมืองอัจฉริยะ <span class="sort-indicator"></span></th>
+                            <th class="p-4 text-center text-[#238823]" data-column="success" onclick="sortTable('success')">ส่งแล้ว<span class="sort-indicator text-black"></span></th>
+                            <th class="p-4 text-center text-orange-500" data-column="unsuccess" onclick="sortTable('unsuccess')">แบบร่าง<span class="sort-indicator text-black"></span></th>
+                            <th class="p-4 text-center text-[#D2222D]" data-column="not" onclick="sortTable('not')">ยังไม่ส่ง<span class="sort-indicator text-black"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="cityTable">
+                        <% city.forEach(function(cityItem) { 
+                            let status = dataStatus.find(statusItem => statusItem.cityID === cityItem.cityID) || {};
+                        %>
+                        <tr class="bg-white mb-4 hover:bg-gray-100" onclick="check('<%= cityItem.cityID %>')">
+                            <td class="p-4 border-b" data-cityid="<%= cityItem.cityID %>"><%= cityItem.cityID %></td>
+                            <td class="p-4 border-b" data-province="<%= cityItem.province %>"><%= cityItem.province %></td>
+                            <td class="p-4 border-b" data-cityname="<%= cityItem.cityName %>"><%= cityItem.cityName %></td>
+                            <td class="p-4 border-b" data-date="<%= cityItem.date %>"><%= new Date(cityItem.date).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' }) %></td>
+                            <td class="p-4 border-b text-center" data-success="<%= status.status2_count || 0 %>"><%= status.status2_count || 0 %></td>
+                            <td class="p-4 border-b text-center" data-unsuccess="<%= status.status1_count || 0 %>"><%= status.status1_count || 0 %></td>
+                            <td class="p-4 border-b text-center" data-not="<%= status.status0_count || 0 %>"><%= status.status0_count || 0 %></td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <%- include('include/ad-footer.ejs') %>
+</body>
+
+<script>
+    const status = <%- totalStatusCounts %>
+    const ctx = document.getElementById('myPieChart').getContext('2d');
+    const myPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['ยังไม่กรอก', 'ฉบับร่าง', 'ส่งแล้ว'],
+            datasets: [{
+                label: 'สถานะโดยรวม',
+                data: [status.status0_count, status.status1_count, status.status2_count],
+                backgroundColor: ['#D2222D', '#FFBF00', '#238823']
+            }]
+        },
+        options: {
+            plugins: {
+                datalabels: {
+                    formatter: (value, context) => `${value}%`,
+                    color: '#fff',
+                    font: { weight: 'bold' }
+                }
+            },
+            legend: {
+                position: 'right',
+                align: 'center',
+                labels: {
+                    boxWidth: 20,
+                    padding: 15
+                }
+            }
+        }
+    });
+</script>
+
+<script>
+    function searchTable() {
+        var input = document.getElementById("searchInput");
+        var filter = input.value.toUpperCase();
+        var table = document.getElementById("cityTable");
+        var tr = table.getElementsByTagName("tr");
+
+        for (var i = 0; i < tr.length; i++) {
+            var tdArray = tr[i].getElementsByTagName("td");
+            var rowContainsFilter = false;
+
+            for (var j = 0; j < tdArray.length; j++) {
+                var td = tdArray[j];
+                if (td) {
+                    if (td.textContent.toUpperCase().indexOf(filter) > -1) {
+                        rowContainsFilter = true;
+                        break;
+                    }
+                }
+            }
+
+            tr[i].style.display = rowContainsFilter ? "" : "none";
+        }
+    }
+
+    function sortTable(column) {
+        var table = document.getElementById("cityTable");
+        var rows = Array.from(table.getElementsByTagName("tr"));
+        var direction = table.getAttribute("data-sort-direction") === "asc" ? "desc" : "asc";
+        var indicatorElements = document.querySelectorAll('.sort-indicator');
+
+        indicatorElements.forEach(element => {
+            element.textContent = '';
+        });
+
+        rows.sort(function(a, b) {
+            var aText = a.querySelector(`[data-${column}]`).getAttribute(`data-${column}`).toLowerCase();
+            var bText = b.querySelector(`[data-${column}]`).getAttribute(`data-${column}`).toLowerCase();
+
+            if (aText < bText) {
+                return direction === "asc" ? -1 : 1;
+            }
+            if (aText > bText) {
+                return direction === "asc" ? 1 : -1;
+            }
+            return 0;
+        });
+
+        rows.forEach(function(row) {
+            table.appendChild(row);
+        });
+
+        table.setAttribute("data-sort-direction", direction);
+
+        var currentIndicator = document.querySelector(`[data-column=${column}] .sort-indicator`);
+        currentIndicator.textContent = direction === 'asc' ? '↑' : '↓';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('searchInput').addEventListener('keyup', searchTable);
+    });
+</script>
+<script>
+     function check(cityID) {
+        window.location.href = `/admin/city/${cityID}`;
+    }
+</script>
+</html>

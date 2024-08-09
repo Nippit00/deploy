@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>City Data Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <style>
+    /* Set the size of the map */
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <%- include('../include/ad-navbar.ejs') %>
+  <div class="container mx-auto py-8">
+    <form action="/admin/postAddCity" method="POST" class="max-w-lg mx-auto bg-white p-9 rounded-lg shadow-md">
+      <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">Add New City Data Form</h2>
+      <div class="mb-6">
+        <label for="cityID" class="block text-gray-700 font-bold mb-2">City ID:</label>
+        <input
+          type="number"
+          id="cityID"
+          name="cityID"
+          class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
+          required
+          pattern="[0-9]{4}"
+          title="Please enter a 4-digit number."
+          oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+          maxlength="4"
+          placeholder="ใส่ได้แค่ตัวเลขจำนวน4ตัว"
+        />
+      </div>
+      <div class="mb-6">
+        <label for="province" class="block text-gray-700 font-bold mb-2">Province:</label>
+        <input
+          type="text"
+          id="province"
+          name="province"
+          class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
+          required
+        />
+      </div>
+      <div class="mb-6">
+        <label for="region" class="block text-gray-700 font-bold mb-2">Region:</label>
+        <select id="region" name="region" class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-200">
+          <option value="ภาคเหนือตอนบน">ภาคเหนือตอนบน</option>
+          <option value="ภาคเหนือตอนล่าง">ภาคเหนือตอนล่าง</option>
+          <option value="ภาคอีสานตอนกลาง">ภาคอีสานตอนกลาง</option>
+          <option value="ภาคอีสานตอนล่าง">ภาคอีสานตอนล่าง</option>
+          <option value="ภาคใต้ตอนบน">ภาคใต้ตอนบน</option>
+          <option value="ภาคใต้ตอนล่าง">ภาคใต้ตอนล่าง</option>
+          <option value="ภาคกลาง">ภาคกลาง</option>
+          <option value="ภาคตะวันออก">ภาคตะวันออก</option>
+          <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+        </select>
+      </div>
+      <div class="mb-6">
+        <label for="cityName" class="block text-gray-700 font-bold mb-2">City Name:</label>
+        <input
+          type="text"
+          id="cityName"
+          name="cityName"
+          class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
+          required
+        />
+      </div>
+      <div class="mb-6">
+        <label for="date" class="block text-gray-700 font-bold mb-2">Year:</label>
+        <input
+          type="date"
+          id="date"
+          name="date"
+          class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
+          required
+        />
+      </div>
+      <div class="mb-6">
+        <label for="developer" class="block text-gray-700 font-bold mb-2">Developer:</label>
+        <input
+          type="text"
+          id="developer"
+          name="developer"
+          class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
+          required
+        />
+      </div>
+      
+      <div class="mb-6">
+        <label for="govInvestment" class="block text-gray-700 font-bold mb-2">Government Investment:</label>
+        <input
+          type="number"
+          id="govInvestment"
+          name="government_investment"
+          class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
+          required
+        />
+      </div>
+      <div class="mb-6">
+        <label for="privateInvestment" class="block text-gray-700 font-bold mb-2">Private Investment:</label>
+        <input
+          type="number"
+          id="privateInvestment"
+          name="private_investment"
+          class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
+          required
+        />
+      </div>
+      <div class="mb-6">
+        <label for="username" class="block text-gray-700 font-bold mb-2">Username:</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
+          required
+        />
+      </div>
+      <div class="mb-6">
+        <label for="password" class="block text-gray-700 font-bold mb-2">Password:</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
+          required
+        />
+      </div>
+      <div class="mb-6">
+        <label for="password2" class="block text-gray-700 font-bold mb-2">Confirm Password:</label>
+        <input
+          type="password"
+          id="password2"
+          name="password2"
+          class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
+          onchange="validateForm()"
+          required
+        />
+        <p id="passwordError" class="text-red-500 mt-2 hidden">
+          Passwords do not match.
+        </p>
+      </div>
+      <div id="map" class="mb-6 rounded-md shadow-md"></div>
+      <input
+        type="hidden"
+        id="latitude"
+        name="LAT"
+      />
+      <input
+        type="hidden"
+        id="longitude"
+        name="LNG"
+      />
+      <input type="hidden" name="_csrf" value="<%=csrfToken%>" id="token" />
+      <div class="mb-6">
+        <input
+          type="submit"
+          value="Submit"
+          class="w-full px-4 py-2 bg-blue-500 text-white rounded-md cursor-pointer hover:bg-blue-700"
+          required
+        />
+      </div>
+    </form>
+  </div>
+  <%- include('../include/ad-footer.ejs') %>
+  <script>
+    function initMap() {
+      const map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 13.812166259339739, lng: 100.56197106838226 },
+        zoom: 7,
+      });
+      const marker = new google.maps.Marker({
+        map,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+        position: { lat: 13.812166259339739, lng: 100.56197106838226 }
+      });
+
+      google.maps.event.addListener(marker, "dragend", function(event) {
+        document.getElementById("latitude").value = this.getPosition().lat();
+        document.getElementById("longitude").value = this.getPosition().lng();
+      });
+    }
+
+    function validateForm() {
+      var password = document.getElementById("password").value;
+      var password2 = document.getElementById("password2").value;
+      var passwordError = document.getElementById("passwordError");
+
+      if (password !== password2) {
+        passwordError.classList.remove("hidden");
+        return false;
+      } else {
+        passwordError.classList.add("hidden");
+        return true;
+      }
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const successParam = urlParams.get("success");
+    if ("<%=success%>" === "true") {
+      swal({
+        title: "Success!",
+        text: "Data saved successfully",
+        icon: "success",
+      }).then(function () {
+        window.location.href = "/admin/city";
+      });
+    }
+  </script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_QQj5dFvATApuqEbGEt1i__KatMvU80o&callback=initMap&libraries=places"></script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+    .content {
+      flex: 1;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <!-- Include Navbar -->
+  <%- include('../include/ad-navbar.ejs') %>
+
+  <div class="content w-[90%] md:w-[80%] mx-auto bg-white p-5 rounded-lg mt-5">
+    <div class="container mx-auto py-8 px-4">
+      <h1 class="text-3xl text-center font-semibold mb-8">แสดงคำถาม</h1>
+
+      <form action="/admin/addQuestion" method="post" class="mx-auto">
+        <div class="flex flex-col md:flex-row items-center border-b border-b-2 border-blue-500 py-2 mb-4">
+          <input
+            name="New_Question"
+            class="border-2 border-blue-500 p-3 rounded-lg w-full md:w-4/12 mb-2 md:mb-0"
+            type="text"
+            placeholder="ใส่คำถามที่อยากเพิ่ม"
+          />
+          <input
+            name="New_Description"
+            class="border-2 border-blue-500 p-3 rounded-lg w-full md:w-8/12 mb-2 md:mb-0 md:ml-5"
+            type="text"
+            placeholder="คำอธิบายคำถาม"
+          />
+          <input type="hidden" name="_csrf" value="<%=csrfToken%>" id="token" />
+          <button
+            class="md:ml-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2 md:mt-0"
+            type="submit" 
+          >
+            เพิ่มคำถาม
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="table-auto w-full text-center">
+        <thead>
+          <tr>
+            <th class="px-4 py-2 bg-gray-200">Question</th>
+            <th class="px-4 py-2 bg-gray-200">Description</th>
+            <th class="px-4 py-2 bg-gray-200">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% data.slice(12).forEach(item => { %>
+            <tr>
+              <td class="px-4 py-2 border text-left"><%= item.question %></td>
+              <td class="px-4 py-2 border text-left"><%= item.Description %></td>
+              <td class="px-4 py-2 border">
+                <button
+                  class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline"
+                  onclick="DeleteQuestion('<%= item.questionID %>')"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Include Footer -->
+  <%- include('../include/ad-footer.ejs') %>
+
+  <script>
+    function DeleteQuestion(QID) {
+      Swal.fire({
+        title: 'คุณแน่ใจหรือไม่?',
+        text: "คุณไม่สามารถกู้คืนข้อมูลนี้ได้!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'ใช่, ลบเลย!',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = `/admin/question/${QID}`;
+        }
+      })
+    }
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const successParam = urlParams.get("success");
+    if ("<%=success%>" === "true") {
+      Swal.fire({
+        title: 'สำเร็จ!',
+        text: 'บันทึกข้อมูลเรียบร้อยแล้ว',
+        icon: 'success',
+      }).then(function () {
+        window.location.href = "/admin/city";
+      });
+    }
+  </script>
+
+  <script>
+    const searchInput = document.getElementById("searchInput");
+
+    searchInput.addEventListener("keyup", (event) => {
+      searchQuestion();
+    });
+
+    function searchQuestion() {
+      const searchText = document
+        .getElementById("searchInput")
+        .value.toLowerCase();
+
+      if (!searchText.trim()) {
+        const tableRows = document.querySelectorAll("tbody tr");
+        tableRows.forEach((row) => {
+          row.style.display = "";
+        });
+        return;
+      }
+
+      const tableRows = document.querySelectorAll("tbody tr");
+      tableRows.forEach((row) => {
+        const questionID = row
+          .querySelector("td:nth-child(1)")
+          .textContent.toLowerCase();
+        const question = row
+          .querySelector("td:nth-child(2)")
+          .textContent.toLowerCase();
+
+        if (questionID.includes(searchText) || question.includes(searchText)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
+    }
+  </script>
+</body>
+</html>

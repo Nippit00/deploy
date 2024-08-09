@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Form</title>
+    <!-- Include Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <!-- Include SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  
+  <body class="bg-gray-100">
+
+    <%- include('../include/ad-navbar.ejs') %>
+  
+    <div class="container mx-auto px-4 py-8">
+      <h2 class="text-2xl font-bold mb-4">Edit Solution Data</h2>
+      <form id="editForm" action="/admin/updateSolution/<%=solutionID%>" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <input type="hidden" name="cityID" value="<%=cityData.cityID%>">
+  
+        <div class="mb-4">
+          <label for="solutionName" class="block text-gray-700 text-sm font-bold mb-2">Solution Name:</label>
+          <input type="text" id="solutionName" name="solutionName" value="<%=cityData.solutionName%>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+        </div>
+  
+        <div class="mb-4">
+          <label for="sourceFunds" class="block text-gray-700 text-sm font-bold mb-2">Source Funds:</label>
+          <input type="text" id="sourceFunds" name="sourceFunds" value="<%=cityData.Source_funds%>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+        </div>
+  
+        <div class="mb-4">
+          <label for="funds" class="block text-gray-700 text-sm font-bold mb-2">Funds:</label>
+          <input type="number" id="funds" name="funds" value="<%=cityData.funds%>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+        </div>
+  
+        <div class="mb-4">
+          <label for="startYear" class="block text-gray-700 text-sm font-bold mb-2">Start Year:</label>
+          <input id="startYear" name="startYear" type="number" min="2560" max="2600" step="1" value="<%=cityData.start_year%>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+        </div>
+  
+        <div class="mb-4">
+          <label for="endYear" class="block text-gray-700 text-sm font-bold mb-2">End Year:</label>
+          <input type="number" min="2560" max="2600" step="1" id="endYear" name="endYear" value="<%=cityData.end_year%>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+        </div>
+  
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  
+        <div class="flex items-center justify-between">
+          <button type="button" id="submitBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Submit</button>
+        </div>
+      </form>
+    </div>
+  
+    <%- include('../include/ad-footer.ejs') %>
+  
+    <script>
+      document.getElementById('submitBtn').addEventListener('click', function() {
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, submit it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            document.getElementById('editForm').submit();
+          }
+        });
+      });
+    </script>
+  </body>  
+</html>

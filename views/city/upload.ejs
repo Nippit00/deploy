@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="../tracktag/img/favi.png">
+    <title>upload</title>
+    <style>
+        #spinner-container {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 9999;
+            overflow: hidden;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #static-image {
+            width: 300px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        #spinner {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 16px;
+            height: 16px;
+            background-color: #3498db;
+            border-radius: 50%;
+            animation: blink 1.4s infinite both;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes blink {
+            0%,
+            80%,
+            100% {
+                opacity: 0;
+            }
+
+            40% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div id="spinner-container">
+        <img id="static-image" src="/img/favi.png" alt="Loading...">
+        <div id="spinner">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+    <%- include('../component/navbar.ejs') %>
+
+    <div class="flex flex-col ">
+        <!-- Navbar -->
+        
+        
+
+        <!-- Banner -->
+        <div class="w-full ">
+            <img src="/img/banner.png" alt="Banner Image" class="w-full">
+          </div>
+
+        <!-- Title -->
+        <div class="title-container text-center py-10">
+            <h1 class="text-3xl font-bold">ไฟล์รายงานครบ 2 ปี</h1>
+        </div>
+
+        <!-- Menu -->
+        <div>
+            <%- include('../component/menu4.ejs') %>
+        </div>
+
+        <!-- Content -->
+        <div class="px-5 mt-7">
+            <div class="text-lg text-center">ท่านสามารถ download ผลสรุปเบื้องต้นได้ดัง link นี้ </div>
+            <br>
+            <div class="text-center">
+                <span>ไฟล์แบบฟอร์มสำหรับเมืองที่ต้องการต่อตราสัญลักษณ์ครบ 2 ปี
+                    <button id="downloadButton" class="ml-4 px-4 py-2 bg-blue-500 text-white rounded-full transition duration-300 ease-in-out hover:bg-blue-600">
+                        <i class="fas fa-download"></i> download
+                    </button>
+                </span>
+            </div>
+        
+            <!-- Upload Form -->
+            <div class="upload-form-container max-w-lg mx-auto p-5 border-2 border-yellow-400 rounded-xl my-10 bg-white shadow-md">
+                <form action="/upload/report/<%=cityid%>" method="post" id="uploadForm" onsubmit="return confirmUpload()">
+                    <div class="titles-container text-center py-5">
+                        <!-- CSRF Token -->
+                        <input type="hidden" name="_csrf" value="<%=csrfToken%>" id="token">
+                        <h5 class="text-xl font-bold mb-5">อัปโหลดไฟล์ต่อตราสัญลักษณ์ครบ 2ปี</h5>
+                        <!-- Upload File Section -->
+                        <div id="uploadContainer" class="upload-container border-2 border-dashed border-yellow-400 p-5 text-center">
+                            <div class="upload-btn bg-yellow-400 text-white rounded-full py-3 px-6 cursor-pointer transition duration-300 ease-in-out hover:bg-yellow-500" id="uploadBtn">Browse Files or Drop Here</div>
+                            <input type="file" name="fileToUpload" id="fileToUpload" class="hidden">
+                            <span class="file-name mt-2 block" id="fileName"></span>
+                        </div>
+                        <!-- Uploaded Files List -->
+                        <div id="uploadedFilesContainer" class="mt-2">
+                            <!-- Files List -->
+                        </div>
+                        <br>
+                        <!-- Submit Button -->
+                        <input type="hidden" value="" name="submit" class="upload-btn-n" id="value">
+                        <input type="submit" value="Upload Files" name="submit" class="upload-btn-n bg-blue-500 text-white rounded-full py-3 px-6 cursor-pointer transition duration-300 ease-in-out hover:bg-blue-600">
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+
+        <!-- Footer -->
+        <div class="mt-auto">
+            <%- include('../component/footer.ejs') %>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            document.getElementById('spinner-container').style.display = 'none';
+        };
+
+        window.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('spinner-container').style.display = 'flex';
+        });
+
+        let FileData = [];
+
+    document.getElementById('uploadBtn').addEventListener('click', function() {
+        document.getElementById('fileToUpload').click();
+    });
+
+    document.getElementById('fileToUpload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const base64Data = event.target.result;
+            document.getElementById("value").value = base64Data;
+            FileData.push(base64Data);
+            console.log(FileData);
+        };
+        reader.readAsDataURL(file);
+    });
+
+    function confirmUpload() {
+        if (FileData.length === 0) {
+            alert("กรุณาเลือกไฟล์ที่ต้องการอัปโหลด");
+            return false;
+        }
+        return confirm("คุณต้องการอัปโหลดไฟล์ใช่หรือไม่?");
+    }
+
+    document.getElementById('downloadButton').addEventListener('click', function(event) {
+        event.preventDefault();
+
+        Swal.fire({
+            title: 'คุณต้องการต่อตราสัญลักษณ์ใช่หรือไม่?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'ใช่',
+            cancelButtonText: 'ไม่'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Assuming you have an element with id 'downloadLink' for the actual download
+                document.getElementById('downloadLink').click();
+            }
+        });
+    });
+
+    const uploadContainer = document.getElementById('uploadContainer');
+    const fileInput = document.getElementById('fileToUpload');
+    const fileNameSpan = document.getElementById('fileName');
+    const uploadedFilesContainer = document.getElementById('uploadedFilesContainer');
+
+    uploadContainer.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadContainer.classList.add('bg-blue-100');
+    });
+
+    uploadContainer.addEventListener('dragleave', () => {
+        uploadContainer.classList.remove('bg-blue-100');
+    });
+
+    uploadContainer.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadContainer.classList.remove('bg-blue-100');
+        const droppedFiles = e.dataTransfer.files;
+        handleFiles(droppedFiles);
+    });
+
+    fileInput.addEventListener('change', () => {
+        handleFiles(fileInput.files);
+    });
+
+    function handleFiles(files) {
+        if (files.length > 0) {
+            const fileName = files[0].name;
+            fileNameSpan.textContent = fileName;
+
+            const uploadedFileElement = document.createElement('div');
+            uploadedFileElement.classList.add('uploaded-file', 'bg-blue-100', 'p-2', 'mb-1', 'rounded', 'flex', 'items-center');
+
+            uploadedFileElement.innerHTML = `
+                <span>${fileName}</span>
+                <i class="fa fa-times ml-auto text-red-500 cursor-pointer" aria-hidden="true" onclick="removeUploadedFile(this)"></i>
+            `;
+
+            uploadedFilesContainer.appendChild(uploadedFileElement);
+        }
+    }
+
+    function removeUploadedFile(element) {
+        const uploadedFileElement = element.closest('.uploaded-file');
+        const index = Array.from(uploadedFilesContainer.children).indexOf(uploadedFileElement);
+
+        if (index !== -1) {
+            uploadedFileElement.remove();
+            FileData.splice(index, 1);
+            document.getElementById('fileName').textContent = ''; // Clear the file name display
+        }
+    }
+
+    function submitData() {
+        if (FileData.length === 0) {
+            alert("กรุณาเลือกไฟล์ที่ต้องการอัปโหลด");
+            return;
+        }
+
+        const csrfToken = document.getElementById('token').value;
+
+        try {
+            const requestBody = {
+                file: FileData,
+                CityID: 123
+            };
+
+            fetch('/upload', {
+                    method: 'POST',
+                    body: JSON.stringify(requestBody),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'CSRF-Token': csrfToken
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    console.log('File uploaded successfully');
+                    window.location.href = "/city";
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+    </script>
+    
+</body>
+
+</html>

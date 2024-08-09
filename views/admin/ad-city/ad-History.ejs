@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Log Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body onload="filterTable()" class="bg-gray-100 min-h-screen flex flex-col">
+    <div class="sticky top-0 z-50">
+        <%- include('../include/ad-navbar.ejs') %>
+    </div>
+    <h1 class="text-center text-3xl font-bold my-6 text-blue-600">Login Log Page</h1>
+    <div class="container mx-auto p-4 bg-white rounded-lg shadow-md">
+        
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table id="logTable" class="min-w-full bg-white border border-gray-200">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="px-4 py-2 text-left">Login ID</th>
+                        <th class="px-4 py-2 text-left">City ID</th>
+                        <th class="px-4 py-2 text-left">Login Time</th>
+                        <th class="px-4 py-2 text-left">Logout Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% data.forEach(entry => { %>
+                    <tr class="hover:bg-gray-50">
+                        <td class="border px-4 py-2"><%= entry.Login_ID %></td>
+                        <td class="border px-4 py-2"><%= entry.cityID %></td>
+                        <td class="border px-4 py-2"><%= entry.login_time %></td>
+                        <td class="border px-4 py-2">
+                            <%= entry.logout_time || 'Not logged out yet' %>
+                        </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination buttons -->
+        <div class="flex justify-center my-4 space-x-2">
+            <button id="PreBt" onclick="paginate('prev')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-l">Previous</button>
+            <button id="NextBt" onclick="paginate('next')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r">Next</button>
+        </div>
+    </div>
+    <%- include('../include/ad-footer.ejs') %>
+
+    <script>
+        var rowsPerPage = 20;
+        var currentPage = 1;
+
+        function filterTable() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("logTable");
+            tr = table.getElementsByTagName("tr");
+            var startIndex = (currentPage - 1) * rowsPerPage;
+            var endIndex = startIndex + rowsPerPage;
+            Nextbt = document.getElementById("NextBt");
+            Prebt = document.getElementById("PreBt");
+            Nextbt.style.display = "";
+            Prebt.style.display = "";
+            for (i = 0; i < tr.length; i++) {
+                if (i >= startIndex && i < endIndex) {
+                    td = tr[i].getElementsByTagName("td")[1]; // Index 1 for City ID column
+                    if (td) {
+                        txtValue = td.textContent || td.innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+
+        function paginate(direction) {
+            var totalPages = Math.ceil(
+                document.getElementById("logTable").getElementsByTagName("tr")
+                .length / rowsPerPage
+            );
+            if (direction === "next" && currentPage < totalPages) {
+                currentPage++;
+            } else if (direction === "prev" && currentPage > 1) {
+                currentPage--;
+            }
+            filterTable();
+        }
+
+        function filterSearchTable() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchInput");
+            if (input.value) {
+                filter = input.value.toUpperCase();
+                table = document.getElementById("logTable");
+                tr = table.getElementsByTagName("tr");
+                Nextbt = document.getElementById("NextBt");
+                Prebt = document.getElementById("PreBt");
+                Nextbt.style.display = "none";
+                Prebt.style.display = "none";
+                // Loop through each row and display/hide based on the filter
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[1]; // Index 1 for City ID column
+                    if (td) {
+                        txtValue = td.textContent || td.innerText;
+                        // Check if the text in the row contains the filter text
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            Nextbt.style.display = "none";
+                            tr[i].style.display = ""; // Display the row if it matches the filter
+                        } else {
+                            tr[i].style.display = "none"; // Hide the row if it does not match the filter
+                        }
+                    }
+                }
+            } else {
+                filterTable()
+            }
+        }
+
+        document.getElementById("searchInput").addEventListener("keyup", function() {
+            filterSearchTable();
+        });
+    </script>
+</body>
+
+</html>

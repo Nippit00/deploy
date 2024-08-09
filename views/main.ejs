@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('include/head.ejs') %>
+    <title><%= pageTitle %></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <div id="spinner-container" class="fixed inset-0 bg-white bg-opacity-90 z-50 flex flex-col justify-center items-center">
+        <img id="static-image" src="/img/favi.png" alt="Loading..." class="w-24 h-auto mb-5">
+        <div id="spinner" class="flex gap-2">
+            <div class="dot w-4 h-4 bg-blue-500 rounded-full animate-blink"></div>
+            <div class="dot w-4 h-4 bg-blue-500 rounded-full animate-blink delay-100"></div>
+            <div class="dot w-4 h-4 bg-blue-500 rounded-full animate-blink delay-200"></div>
+        </div>
+    </div>
+
+    <%- include('component/navbar.ejs') %>
+    
+
+    <div class=" ">
+        <img src="/img/banner.png" alt="Banner Image" class="w-full ">
+    </div>
+
+    <div class="title-container text-center py-5">
+        <h1 class="text-4xl"><span class="text-yellow-600">CITY</span> PROFILE DASHBOARD</h1>
+    </div>
+
+    <div class="content-container flex justify-center items-center p-8">
+        <iframe title="web" width="1200" height="800" src="https://app.powerbi.com/view?r=eyJrIjoiZjk0NTY5ZDgtODgwOC00Yjc1LTg0MDUtNjllZDM3M2Y0NmRmIiwidCI6IjRhNGY3YjUyLTBlMDUtNDQxNS04NDU0LTc2ODliMDBhODdiMiIsImMiOjEwfQ%3D%3D&pageName=ReportSection" frameborder="0" allowFullScreen="true"></iframe>
+    </div>
+
+    <div class="titles-container text-center py-5">
+        <h1 class="text-4xl"><span class="text-yellow-600">CITY</span> OVERALL</h1>
+    </div>
+
+    <div class="table-container w-4/5 mx-auto bg-yellow-300 shadow-md rounded-2xl p-5 mb-5">
+        <input type="text" id="searchInput" placeholder="ค้นหา..." class="w-64 p-2 mb-5 border-2 border-teal-500 rounded-full float-right">
+        <table class="table w-full border-collapse bg-white rounded-lg">
+            <thead >
+                <tr class="bg-yellow-100 ">
+                    <th class="p-4 ">ลำดับ</th> 
+                    <th class="p-4">แผนพัฒนาเมืองอัจฉริยะ</th>
+                    <th class="p-4">จังหวัด</th>
+                    <th class="p-4">ประกาศเมืองอัจฉริยะ</th>
+                    <th class="p-4">อายุการถือครองตราสัญลักษณ์</th>
+                    <th class="p-4">%ความคืบหน้า</th>
+                    <th class="p-4">%ความสำเร็จ</th>
+                </tr>
+            </thead>    
+            <tbody>
+                <% fetchData.forEach((data, index) => { 
+                    
+                    %>
+                <tr class="hover:bg-gray-100">
+                    <td class="p-4"><%= index + 1 %></td>
+                    <td class="p-4"><a href="#" class="text-blue-500 hover:underline"><%= data.cityName %></a></td>
+                    <td class="p-4"><%= data.province %></td>
+                    <td class="p-4">
+                        <%=data.date.toLocaleDateString('th-TH', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })  %>
+                    </td>
+                    <% if (data.years <= 0) { %>
+                        <td class="p-4"><%= data.months %> เดือน <%= data.days %> วัน</td>
+                    <% } else { %>
+                        <td class="p-4"><%= data.years %> ปี <%= data.months %> เดือน <%= data.days %> วัน</td>
+                    <% } %>
+                    <td class="p-4"><%=data.averageProgress%>%</td>
+                    <td class="p-4 ">
+                        <%= data.completionPercentage %>%
+                        
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        <div id="table-navigation" class="flex justify-between mt-4">
+            <button id="prevButton" class="w-24 p-2 bg-yellow-100 border-2 border-yellow-600 rounded-full hover:bg-yellow-600 hover:text-white">Back</button>
+            <span id="pageIndex" class="text-lg">Page 1</span>
+            <button id="nextButton" class="w-24 p-2 bg-yellow-100 border-2 border-yellow-600 rounded-full hover:bg-yellow-600 hover:text-white">Next</button>
+        </div>
+    </div>
+
+    <%- include('component/footer.ejs') %>
+
+    
+    
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rowsPerPage = 10;
+        let allRows = Array.from(document.querySelectorAll('table tbody tr'));
+        let currentPage = 1;
+
+        const prevButton = document.getElementById('prevButton');
+        const nextButton = document.getElementById('nextButton');
+        const pageIndex = document.getElementById('pageIndex');
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+            currentPage = Math.min(currentPage, totalPages) || 1;
+            displayRows();
+        }
+
+        function displayRows() {
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            allRows.forEach(row => row.style.display = 'none'); // Hide all rows initially
+            filteredRows.slice(start, end).forEach(row => row.style.display = ''); // Show only the rows for the current page
+
+            pageIndex.textContent = `Page ${currentPage} of ${Math.ceil(filteredRows.length / rowsPerPage)}`;
+            prevButton.disabled = currentPage === 1;
+            nextButton.disabled = currentPage === Math.ceil(filteredRows.length / rowsPerPage) || filteredRows.length === 0;
+        }
+
+        function changePage(next) {
+            currentPage += next ? 1 : -1;
+            displayRows();
+        }
+
+        prevButton.addEventListener('click', () => changePage(false));
+        nextButton.addEventListener('click', () => changePage(true));
+
+        const searchInput = document.getElementById('searchInput');
+        let filteredRows = allRows; // Start with all rows
+
+        searchInput.addEventListener('keyup', function() {
+            const searchText = searchInput.value.toLowerCase();
+            filteredRows = allRows.filter(row => {
+                return Array.from(row.querySelectorAll('td')).some(cell => cell.textContent.toLowerCase().includes(searchText));
+            });
+            currentPage = 1; // Reset to the first page
+            updatePagination();
+        });
+
+        displayRows(); // Initially display the first page
+    });
+
+    window.onload = function() {
+        document.getElementById('spinner-container').style.display = 'none';
+    };
+    window.addEventListener('DOMContentLoaded', (event) => {
+        document.getElementById('spinner-container').style.display = 'flex';
+    });
+</script>
+</html>

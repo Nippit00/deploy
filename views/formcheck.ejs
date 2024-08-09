@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <title>Form</title>
+    <link rel="icon" type="image/x-icon" href="../tracktag/img/favi.png">
+    <style>
+        .highlight {
+            color: #FF5722;
+        }
+
+        #spinner-container {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 9999;
+            overflow: hidden;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #static-image {
+            width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        #spinner {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 16px;
+            height: 16px;
+            background-color: #3498db;
+            border-radius: 50%;
+            animation: blink 1.4s infinite both;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes blink {
+
+            0%,
+            80%,
+            100% {
+                opacity: 0;
+            }
+
+            40% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+
+    <div id="spinner-container">
+        <img id="static-image" src="/img/favi.png" alt="Loading...">
+        <div id="spinner">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+
+    <%- include('component/navbar.ejs') %>
+
+        <div class="container mx-auto mt-12">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold text-gray-800">
+                    <%= data.cityName %>
+                </h1>
+                <h2 class="text-xl font-medium text-gray-600 mt-2">
+                    <%= data.solutionName %>
+                </h2>
+            </div>
+
+            <div class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">รายละเอียดโครงการ</h3>
+                        <p>ชื่อโครงการ: <span class="highlight">
+                                <%= data.solutionName %>
+                            </span></p>
+                        <p>รหัสโครงการ: <span class="highlight">
+                                <%= data.solutionID %>
+                            </span></p>
+                        <p>Smart: <span class="highlight">
+                                <%= data.smartKey %>
+                            </span></p>
+                        <p>แหล่งเงินทุน: <span class="highlight">
+                                <%= data.Source_funds %>
+                            </span></p>
+                        <p>เงินทุน (บาท): <span class="highlight">
+                                <%= data.funds %>
+                            </span> ล้าน บาท</p>
+
+                        <% const keysQ=Object.keys(dataCheck).filter(key=> key.startsWith('Q'));
+                            const keysA = Object.keys(dataCheck).filter(key => key.startsWith('A'));
+                            console.log(dataCheck['A1']!=='ยกเลิก')
+                            if(dataCheck['A1']!=='ยกเลิก'&&dataCheck['A1']!=='ปรับแผน'){
+                                for (let i = 0; i < Math.max(keysQ.length, keysA.length); i++) { const keyQ=keysQ[i]; const
+                                    keyA=keysA[i]; %>
+                                    <p>
+                                        <% if (keyQ) { %>
+                                            <%= dataCheck[keyQ] %>
+                                                <% } %>:
+                                                    <% if (keyA) { %>
+                                                        <span class="highlight">
+                                                            <%= dataCheck[keyA] %>
+                                                        </span>
+                                                        <% } %>
+                                    </p>
+                                <% }
+                                } else{ 
+                                    for (let i = 0; i < Math.max(keysQ.length, keysA.length); i++) { const keyQ=keysQ[i]; const
+                                        keyA=keysA[i]; 
+                                        if(keyA==='A1'||keyA==='A2'||keyA==='A5'||keyA==='A8'){
+                                        %>
+                                        <p>
+                                            <% if (keyQ) { %>
+                                                <%= dataCheck[keyQ] %>
+                                                    <% } %>:
+                                                        <% if (keyA) { %>
+                                                            <span class="highlight">
+                                                                <%= dataCheck[keyA] %>
+                                                            </span>
+                                                            <% } %>
+                                        </p>
+                                    <% }}
+                                } %>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">ตัวชี้วัด ที่ได้รับอนุมติ</h3>
+                        <% Object.keys(dataCheck).forEach(function(key) { %>
+                            <% dataKpi.forEach(function(item) { %>
+                                <% if (item.kpiID===key ) { %>
+                                    <p>
+                                        <%= item.kpiName %>: <div class="highlight">ผลการดำเนินงาน: <%= dataCheck[key]
+                                                    %>
+                                            </div>
+                                    </p>
+                                    <% } %>
+                                        <% }); %>
+                                            <% }); %>
+                    </div>
+                </div>
+
+                <div class="flex justify-end mt-8">
+                    <button type="button" id="editBtn"
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-full mr-4">แก้ไข</button>
+                    <button type="submit" id="confirmBtn"
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-full">ยืนยัน</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            window.onload = function () {
+                document.getElementById('spinner-container').style.display = 'none';
+            };
+
+            window.addEventListener('DOMContentLoaded', (event) => {
+                document.getElementById('spinner-container').style.display = 'flex';
+            });
+
+            const cancelBtn = document.getElementById('editBtn');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const currentDateTime = new Date().toLocaleString('th-TH', {
+                timeZone: 'Asia/Bangkok',
+                hour12: false,
+            });
+
+            function goBack() {
+                window.location.href = "/city/follow"
+            }
+
+            confirmBtn.addEventListener('click', async () => {
+                Swal.fire({
+                    title: 'คุณแน่ใจไหม?',
+                    text: 'เมื่อส่งรายงานแล้ว คุณจะไม่สามารถยกเลิกการดำเนินการหรือเเก้ไขได้!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'ยืนยัน',
+                    cancelButtonText: 'ยกเลิก',
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        try {
+                            const dataCheckString = '<%- JSON.stringify(dataCheck) %>';
+                            const dataChecks = JSON.parse(dataCheckString);
+                            const csrfToken = '<%= csrfToken %>';
+
+                            const response = await fetch('/comfirmformcheck/<%= data.solutionID %>/<%=round%>', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': csrfToken
+                                },
+                                body: JSON.stringify({
+                                    dataChecks: dataChecks,
+                                    currentDateTime: currentDateTime
+                                })
+                            });
+                            if (response.ok) {
+                                Swal.fire({
+                                    title: 'ส่งรายงานสำเร็จ!',
+                                    text: 'ส่งรายงานข้อมูลสำเร็จเรียบร้อยเเล้ว',
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    window.location.href = '/city/follow';
+                                });
+                                console.log('Data sent successfully!');
+                            } else {
+                                console.error('Failed to send data.');
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                        }
+                    }
+                });
+            });
+
+            document.getElementById('editBtn').addEventListener('click', async () => {
+                try {
+                    const dataCheckString = '<%- JSON.stringify(dataCheck) %>';
+                    const dataChecks = JSON.parse(dataCheckString.replace(/&quot;/g, '"')); // Properly escape and parse JSON
+                    const csrfToken = '<%= csrfToken %>';
+                    const solutionID = '<%= data.solutionID %>';
+                    const round = '<%= dataCheck.round %>';
+
+                    const response = await fetch(`/saveEdit/${solutionID}/${round}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({
+                            dataChecks: dataChecks,
+                            currentDateTime: new Date().toISOString() // Assuming currentDateTime should be current time
+                        })
+                    });
+
+                    if (response.ok) {
+                        if (solutionID.includes("CDP01")) {
+                            window.location.href = `/formcdp1/${solutionID}/${round}`;
+                        } else {
+                            window.location.href = `/formsmart/${solutionID}/${round}`;
+                        }
+                    } else {
+                        console.error('Error:', response.status);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+
+        </script>
+
+        <%- include('component/footer.ejs') %>
+
+</body>
+
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เพิ่ม Solution</title>
+  <!-- Include Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- Include SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body class="bg-gray-100">
+  <%- include('../include/ad-navbar.ejs') %>
+  <div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">เพิ่ม Solution</h1>
+    <form id="addSolutionForm" action="/admin/addSolution" method="post" class="space-y-6 bg-white p-6 rounded-lg shadow-lg">
+      <div class="mb-4">
+        <input
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="cityID" type="hidden" name="cityID" value="<%= cityID %>">
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="solutionName">
+            Solution Name
+          </label>
+          <input
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="solutionName" type="text" placeholder="Solution Name" name="solutionName">
+        </div>
+        <div class="flex flex-col">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="smart">
+            Smart
+          </label>
+          <select
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="smart" name="smart">
+            <option value="โครงสร้างพื้นฐานด้านกายภาพ">โครงสร้างพื้นฐานด้านกายภาพ</option>
+            <option value="โครงสร้างพื้นฐานด้านดิจิทัล">โครงสร้างพื้นฐานด้านดิจิทัล</option>
+            <option value="City Data Platform">City Data Platform</option>
+            <option value="Environment">Environment</option>
+            <option value="Energy">Energy</option>
+            <option value="Economy">Economy</option>
+            <option value="Governance">Governance</option>
+            <option value="Living">Living</option>
+            <option value="Mobility">Mobility</option>
+            <option value="People">People</option>
+          </select>
+        </div>
+        <div class="flex flex-col">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="sourceFunds">
+            Source Funds
+          </label>
+          <input
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="sourceFunds" type="text" placeholder="Source Funds" name="sourceFunds">
+        </div>
+        <div class="flex flex-col">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="funds">
+            Funds
+          </label>
+          <input
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="funds" type="number" placeholder="Funds" name="funds">
+        </div>
+        <div class="flex flex-col">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="startYear">
+            Start Year
+          </label>
+          <input
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            name="startYear" id="startYear" type="number" min="2560" max="2600" step="1" value="2567"
+            placeholder="Start Year">
+        </div>
+        <div class="flex flex-col">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="endYear">
+            End Year
+          </label>
+          <input
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            name="endYear" id="endYear" type="number" min="2560" max="2600" step="1" value="2569"
+            placeholder="End Year">
+        </div>
+      </div>
+      <input
+        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        value='0' id="status" type="hidden" placeholder="Status" name="status">
+      <input type="hidden" name="_csrf" value="<%=csrfToken%>" id="token" />
+      <div class="flex items-center justify-between">
+        <button
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          type="button" id="submitBtn">
+          Add Solution
+        </button>
+      </div>
+    </form>
+  </div>
+  
+    <%- include('../include/ad-footer.ejs') %>
+  
+  
+  <script>
+    document.getElementById('submitBtn').addEventListener('click', function() {
+      Swal.fire({
+        title: 'คุณแน่ใจหรือไม่?',
+        text: "คุณต้องการเพิ่มโซลูชันนี้หรือไม่?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'ใช่, เพิ่ม!',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.getElementById('addSolutionForm').submit();
+        }
+      });
+    });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const successParam = urlParams.get('success');
+    if (successParam === 'true') {
+      Swal.fire({
+        title: "เพิ่มโซลูชันสำเร็จ!",
+        text: "เพิ่มโซลูชันสำเร็จ!",
+        icon: "success",
+      }).then(function () {
+        window.location.href = "/admin/city/<%= cityID %>";
+      });
+    }
+  </script>
+</body>
+</html>
