@@ -89,25 +89,26 @@
     <div class="flex flex-col ">
         
             
-       
         <div class="relative">
             <img src="/img/banner.png" alt="Banner Image" class="w-full">
         
-            <div class="absolute top-0 right-0 mt-4 mr-4">
-                <div id="alert" class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md" role="alert">
-                    <div class="flex">
-                        <div class="py-1">
-                            <svg class="fill-current h-6 w-6 text-teal-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
-                            </svg>
+                <div class="absolute top-0 right-0 mt-4 mr-4">
+                    <div id="alert" class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md flex items-center justify-between" role="alert">
+                        <div class="flex items-center">
+                            <div class="py-1">
+                                <svg class="fill-current h-6 w-6 text-teal-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-bold">รายการ KPI ของท่านถูกเปลี่ยนเเปลง</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="font-bold">Our privacy policy has changed</p>
-                            <p class="text-sm">Make sure you know how these changes affect you.</p>
+                        <div class="ml-4">
+                            <button id="closeButton" class="bg-teal-500 text-white px-4 py-2 rounded">ตกลง</button>
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
         <div class="text-4xl flex font-normal justify-center py-5 flex-wrap">
             <p>แผน </p>
@@ -330,9 +331,50 @@
             }
         }
 
+        document.getElementById("closeButton").addEventListener("click", function() {
+            document.getElementById("alert").style.display = "none";
+        });
+
 
 
         document.addEventListener("DOMContentLoaded", function () {
+            //ส่วนเเสดงเเจ้งเตือน
+            var dataKpiChange = <%- dataKpiChange %>;
+            if (dataKpiChange !== 1) {
+                document.getElementById('alert').style.display = 'none';
+            }
+
+            // ยิง API เมื่อปุ่มถูกคลิก
+            document.getElementById('closeButton').addEventListener('click', function() {
+                const cityId = <%= cityInfo.cityID %>;
+                const csrfToken = '<%= csrfToken %>';
+            
+                fetch('/city/close', {  // Matches the updated POST route
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrfToken 
+                    },
+                    body: JSON.stringify({
+                        cityId: cityId 
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json(); 
+                })
+                .then(data => {
+                    console.log('Success:', data); 
+                })
+                .catch(error => {
+                    console.error('Error:', error); 
+                });
+            });
+            
+                      
+
             const twoYearsLaterFormatted = '<%= announcementDuration.twoYearsLaterFormatted %>'; // เวลาที่ต้องการคำนวณถึงดึงมากจาก database
             const announcementDuration = <%- JSON.stringify(announcementDuration) %>;
             const round = <%- dataRound %>;
@@ -354,7 +396,6 @@
             const closeForm = new Date(formEndYear-543, formEndMonth-1, formEndDay);
             const fifteenDaysBeforeClose = new Date(closeForm);
             fifteenDaysBeforeClose.setDate(closeForm.getDate() - 15);
-            console.log(fifteenDaysBeforeClose)
             
 
             // ตั้งเวลาให้เป็น 00:00:00

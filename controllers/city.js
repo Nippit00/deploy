@@ -1,8 +1,12 @@
+const { json } = require("body-parser");
 const db = require("../db.js");
-const moment = require('moment'); //ใช้ในการคำนวณวันที่
+const moment = require('moment'); //à¹ƒà¸Šà¹‰à¹ƒà¸™à¸à¸²à¸£à¸„à¸³à¸™à¸§à¸“à¸§à¸±à¸™à¸—à¸µà¹ˆ
 
 exports.GetCity = (req, res) => {
   const cityID = req.session.userID;
+
+  const qKpiChange = 
+    "SELECT DISTINCT kpi.kpiChange FROM kpi JOIN solution ON solution.solutionID = kpi.solutionID JOIN citydata ON citydata.cityID = solution.cityID WHERE citydata.cityID = ? AND kpi.kpiChange = 1"
   const qCityData =
     "SELECT * FROM citydata JOIN city_home ON citydata.cityID = city_home.cityID WHERE citydata.cityID = ?";
   const qSolution =
@@ -26,8 +30,8 @@ exports.GetCity = (req, res) => {
       const years = duration.years();
       const months = duration.months();
       const days = duration.days();
-      const totalDays = currentDate.diff(announcementDate, 'days'); //นับวันทั้งหมด
-      const twoYearsLater = announcementDate.clone().add(2, 'years'); //นับจากวันที่ประกาศไป2ปี
+      const totalDays = currentDate.diff(announcementDate, 'days'); //à¸™à¸±à¸šà¸§à¸±à¸™à¸—à¸±à¹‰à¸‡à¸«à¸¡à¸”
+      const twoYearsLater = announcementDate.clone().add(2, 'years'); //à¸™à¸±à¸šà¸ˆà¸²à¸à¸§à¸±à¸™à¸—à¸µà¹ˆà¸›à¸£à¸°à¸à¸²à¸¨à¹„à¸›2à¸›à¸µ
       const twoYearsLaterFormatted = twoYearsLater.format('DD/MM/YYYY');
 
 
@@ -55,85 +59,95 @@ exports.GetCity = (req, res) => {
         db.query(qCityFile, [cityID], (err, cityFileData) => {
           if (err) return res.status(500).json(err);
 
-          db.query(qProvince,[cityData[0].province,cityData[0].cityID],(err,province)=>{
-          if (err) return res.status(500).json(err);
-            db.query(qRound,[cityID],(err,dataRound)=>{
+          db.query(qKpiChange,[cityID],(err,dataKpiChange)=>{
+            if (err) return res.status(500).json("error kpiChange",err)
+
+            if (dataKpiChange.length === 0) {
+              dataKpiChange[0] = 0; 
+          }
+            dataKpiChange[0] = 1;
+            db.query(qProvince,[cityData[0].province,cityData[0].cityID],(err,province)=>{
               if (err) return res.status(500).json(err);
-
-              const openFormatNormal = moment(dataRound[0].open);
-              const closeFormatNormal = moment(dataRound[0].close);
-              const current = moment();
-              openFormatNormal.hours(0).minutes(0).seconds(0).milliseconds(0);
-              closeFormatNormal.hours(23).minutes(59).seconds(59).milliseconds(999);
-              if (current >= openFormatNormal && current < closeFormatNormal) {
-                req.session.isTime = true;
-              } else {
-                req.session.isTime = false;
-              }
-
-              //เเปลงวันสันเดือนปี พศ.ไทย
-              const Open = moment(dataRound[0].open);
-              const Close = moment(dataRound[0].close);
-              const dateOpen = Open.locale('th').add(543, 'years').format('DD MMMM YYYY');
-              const dateClose = Close.locale('th').add(543, 'years').format('DD MMMM YYYY');
-
-              //เอามาเเยกค่าเป็น วัน เดือน ปี
-              const formStartDay = Open.date();
-              const formStartMonth = Open.month() + 1; // month is zero-indexed
-              const formStartMonthThai = Open.locale('th').format('MMMM');
-              const formEndMonthThai = Close.locale('th').format('MMMM');
-              const formStartYear = Open.year();
-              const formEndDay = Close.date();
-              const formEndMonth = Close.month() + 1; // month is zero-indexed
-              const formEndYear = Close.year();
-
-
-              //คำนวณวันที่เหลือเวลาในการกรอกฟอร์ม
-              const formEndDate = moment([formEndYear-543, formEndMonth-1, formEndDay]);
-              const currentDate = moment();
-              formEndDate.hours(23).minutes(59).seconds(59).milliseconds(999);
-              const durationEndForm = moment.duration(formEndDate.diff(currentDate));
-              const remainingYears = durationEndForm.years();
-              const remainingMonths = durationEndForm.months();
-              const remainingDays = durationEndForm.days();
-              //คำนวณวันที่เหลือในการเปิดให้กรอกฟอร์ม
-              const formStartDate = moment([formStartYear-543, formStartMonth-1, formStartDay]);
-              currentDate.hours(0).minutes(0).seconds(0).milliseconds(0);
-              formStartDate.hours(23).minutes(59).seconds(59).milliseconds(999);
-              const durationStartForm = moment.duration(formStartDate.diff(currentDate));
-              const remainingYearStart = durationStartForm.years();
-              const remainingMonthStart = durationStartForm.months();
-              const remainingDayStart = durationStartForm.days();
-              res.render("city/city", {
-                req,
-                cityName: cityData[0].province,
-                pageTitle: cityData[0].cityname,
-                path: "/city",
-                cityInfo: cityData[0],
-                citysolution: solutionData,
-                smartKeyCounts: smartKeyCounts,// ส่งจำนวน smart key แต่ละตัวในออบเจกต์ไปยัง view
-                datafile: cityFileData,
-                announcementDuration: { years, months, days, totalDays, twoYearsLaterFormatted,twoYearsLaterFormatThai,dateOpen,dateClose,anvDays,anvMonths,anvYears},
-                province:province,
-                dataRound:JSON.stringify(dataRound[0]),
-                formDates: {
-                  formStartDay,//วันที่เปิดฟอร์มเเบบเเยก วัน เดือน ปี
-                  formStartMonth,
-                  formStartYear,
-                  formEndDay,
-                  formEndMonth,
-                  formEndYear,
-                  formStartMonthThai,//เดือนไทย
-                  formEndMonthThai,
-                  remainingDays,//วันที่เหลือเวลากรอกฟอร์ม
-                  remainingMonths,
-                  remainingYears,
-                  remainingDayStart,//วันที่เหลือที่ฟอร์มจะเปิด
-                  remainingMonthStart,
-                  remainingYearStart,
-                }
-              });
-            })
+                db.query(qRound,[cityID],(err,dataRound)=>{
+                  if (err) return res.status(500).json(err);
+    
+                  const openFormatNormal = moment(dataRound[0].open);
+                  const closeFormatNormal = moment(dataRound[0].close);
+                  const current = moment();
+                  openFormatNormal.hours(0).minutes(0).seconds(0).milliseconds(0);
+                  closeFormatNormal.hours(23).minutes(59).seconds(59).milliseconds(999);
+                  if (current >= openFormatNormal && current < closeFormatNormal) {
+                    req.session.isTime = true;
+                  } else {
+                    req.session.isTime = false;
+                  }
+    
+                  //à¹€à¹€à¸›à¸¥à¸‡à¸§à¸±à¸™à¸ªà¸±à¸™à¹€à¸”à¸·à¸¬à¸™à¸›à¸µ à¸žà¸¨.à¹„à¸—à¸¢
+                  const Open = moment(dataRound[0].open);
+                  const Close = moment(dataRound[0].close);
+                  const dateOpen = Open.locale('th').add(543, 'years').format('DD MMMM YYYY');
+                  const dateClose = Close.locale('th').add(543, 'years').format('DD MMMM YYYY');
+    
+                  //à¹€à¸¬à¸²à¸¡à¸²à¹€à¹€à¸¢à¸à¸„à¹ˆà¸²à¹€à¸›à¹‡à¸™ à¸§à¸±à¸™ à¹€à¸”à¸·à¸¬à¸™ à¸›à¸µ
+                  const formStartDay = Open.date();
+                  const formStartMonth = Open.month() + 1; // month is zero-indexed
+                  const formStartMonthThai = Open.locale('th').format('MMMM');
+                  const formEndMonthThai = Close.locale('th').format('MMMM');
+                  const formStartYear = Open.year();
+                  const formEndDay = Close.date();
+                  const formEndMonth = Close.month() + 1; // month is zero-indexed
+                  const formEndYear = Close.year();
+    
+    
+                  //à¸„à¸³à¸™à¸§à¸“à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸-à¹€à¸§à¸¥à¸²à¹ƒà¸™à¸à¸²à¸£à¸à¸£à¸¬à¸à¸Ÿà¸¬à¸£à¹Œà¸¡
+                  const formEndDate = moment([formEndYear-543, formEndMonth-1, formEndDay]);
+                  const currentDate = moment();
+                  formEndDate.hours(23).minutes(59).seconds(59).milliseconds(999);
+                  const durationEndForm = moment.duration(formEndDate.diff(currentDate));
+                  const remainingYears = durationEndForm.years();
+                  const remainingMonths = durationEndForm.months();
+                  const remainingDays = durationEndForm.days();
+                  //à¸„à¸³à¸™à¸§à¸“à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸-à¹ƒà¸™à¸à¸²à¸£à¹€à¸›à¸´à¸”à¹ƒà¸«à¹‰à¸à¸£à¸¬à¸à¸Ÿà¸¬à¸£à¹Œà¸¡
+                  const formStartDate = moment([formStartYear-543, formStartMonth-1, formStartDay]);
+                  currentDate.hours(0).minutes(0).seconds(0).milliseconds(0);
+                  formStartDate.hours(23).minutes(59).seconds(59).milliseconds(999);
+                  const durationStartForm = moment.duration(formStartDate.diff(currentDate));
+                  const remainingYearStart = durationStartForm.years();
+                  const remainingMonthStart = durationStartForm.months();
+                  const remainingDayStart = durationStartForm.days();
+                  console.log(dataKpiChange[0])
+                  res.render("city/city", {
+                    dataKpiChange:dataKpiChange[0],
+                    req,
+                    cityName: cityData[0].province,
+                    pageTitle: cityData[0].cityname,
+                    path: "/city",
+                    cityInfo: cityData[0],
+                    citysolution: solutionData,
+                    smartKeyCounts: smartKeyCounts,// à¸ªà¹ˆà¸‡à¸ˆà¸³à¸™à¸§à¸™ smart key à¹à¸•à¹ˆà¸¥à¸°à¸•à¸±à¸§à¹ƒà¸™à¸¬à¸¬à¸šà¹€à¸ˆà¸à¸•à¹Œà¹„à¸›à¸¢à¸±à¸‡ view
+                    datafile: cityFileData,
+                    announcementDuration: { years, months, days, totalDays, twoYearsLaterFormatted,twoYearsLaterFormatThai,dateOpen,dateClose,anvDays,anvMonths,anvYears},
+                    province:province,
+                    dataRound:JSON.stringify(dataRound[0]),
+                    formDates: {
+                      formStartDay,//à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸›à¸´à¸”à¸Ÿà¸-à¸£à¹Œà¸¡à¹€à¹€à¸šà¸šà¹€à¹€à¸¢à¸ à¸§à¸±à¸™ à¹€à¸”à¸·à¸¬à¸™ à¸›à¸µ
+                      formStartMonth,
+                      formStartYear,
+                      formEndDay,
+                      formEndMonth,
+                      formEndYear,
+                      formStartMonthThai,//à¹€à¸”à¸·à¸¬à¸™à¹„à¸—à¸¢
+                      formEndMonthThai,
+                      remainingDays,//à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸¬à¹€à¸§à¸¥à¸²à¸à¸£à¸-à¸à¸Ÿà¸¬à¸£à¹Œà¸¡
+                      remainingMonths,
+                      remainingYears,
+                      remainingDayStart,//à¸§à¸±à¸™à¸—à¸µà¹ˆà¹€à¸«à¸¥à¸·à¸¬à¸—à¸µà¹ˆà¸Ÿà¸-à¸£à¹Œà¸¡à¸ˆà¸°à¹€à¸›à¸´à¸”
+                      remainingMonthStart,
+                      remainingYearStart,
+                    }
+                  });
+                })
+              })
           })
               
 
@@ -149,22 +163,31 @@ exports.GetCity = (req, res) => {
 
 exports.getCityDashboard = (req, res, next) => {
   const cityID = req.session.userID;
-  const q = `SELECT solution.solutionID,smart.smart,city_home.cityName,city_home.cityID FROM solution JOIN smart ON solution.smartKey = smart.smartKey JOIN citydata ON citydata.cityID = solution.cityID JOIN city_home ON city_home.cityID = solution.cityID WHERE solution.cityID = ? GROUP BY solution.solutionID, smart.smart, city_home.cityName, city_home.cityID;`;
+  const q = `SELECT solution.solutionID,solution.status,solution.status_solution,smart.smartKey,solution.solutionName,solution.Progress,citydata.province,citydata.Vision FROM solution JOIN smart ON solution.smartKey = smart.smartKey JOIN citydata ON citydata.cityID = solution.cityID JOIN city_home ON city_home.cityID = solution.cityID WHERE solution.cityID = ? GROUP BY solution.solutionID,solution.status,solution.status_solution,smart.smartKey,solution.solutionName,solution.Progress,citydata.province,citydata.Vision;`;
   const qGetvalue = `SELECT * FROM anssolution JOIN solution ON anssolution.solutionID = solution.solutionID WHERE solution.cityID = ?;`;
   const qGetprogress = `SELECT * FROM solution JOIN anssolution ON solution.solutionID = anssolution.solutionID WHERE solution.cityID = ?;`;
   const qSmartKey = `SELECT smartKey,solutionName FROM solution  WHERE cityID=? `;
-  const qRound = `SELECT * FROM round JOIN citydata ON round.Date = citydata.date WHERE citydata.cityID = ? ORDER BY round.round DESC;`
+  const qRound = `SELECT * FROM round JOIN citydata ON round.Date = citydata.date WHERE citydata.cityID = ? ORDER BY round.round DESC;`;
 
   try {
     db.query(q, [cityID], (err, data) => {
       if (err) return res.status(500).json(err);
 
       const dataUpdate = data.map((row) => {
+        let parsedStatus;
+        try {
+          parsedStatus = row.status ? JSON.parse(row.status) : {};
+        } catch (err) {
+          console.error(`Failed to parse status for solutionID ${row.solutionID}:`, err);
+          parsedStatus = {}; // or some default value
+        }
+      
         return {
           ...row,
-          status: JSON.parse(row.status),
+          status: parsedStatus,
         };
       });
+      
 
       db.query(qGetvalue, [cityID], (err, value) => {
         if (err) return res.status(500).json(err);
@@ -172,26 +195,25 @@ exports.getCityDashboard = (req, res, next) => {
         db.query(qGetprogress, [cityID], (err, dataProgress) => {
           if (err) return res.status(500).json(err);
 
-          db.query(qRound,[cityID],(err,dataRound)=>{
-            if(err) return res.status(500).json(err)
+          db.query(qRound, [cityID], (err, dataRound) => {
+            if (err) return res.status(500).json(err);
+
             const announcementDate = moment(dataRound[0].date);
             const twoYearsLaterFormatted = announcementDate.clone().add(2, 'years');
             const twoYearsLaterDate = twoYearsLaterFormatted.toDate();
 
-            db.query(qSmartKey,[cityID],(err,dataSmartkey)=>{
+            db.query(qSmartKey, [cityID], (err, dataSmartkey) => {
               if (err) return res.status(500).json(err);
-  
+
               if (dataProgress.length === 0) {
                 const rounded = {};
                 const smartKeyCounts = {};
                 const problemPercentages = [];
                 const successfulProjectsData = Array(10).fill(0);
                 let unsuccessfulProjectsData = [];
-    
-                const averageProgressPerSmartKey = {
-                
-                };
-    
+
+                const averageProgressPerSmartKey = {};
+
                 dataSmartkey.forEach((row) => {
                   if (smartKeyCounts[row.smartKey]) {
                     smartKeyCounts[row.smartKey]++;
@@ -203,9 +225,9 @@ exports.getCityDashboard = (req, res, next) => {
                   (acc, value) => acc + value,
                   0
                 );
-    
+
                 unsuccessfulProjectsData = Object.values(smartKeyCounts);
-    
+
                 rounded["1"] = {
                   count: count,
                   complete: [],
@@ -216,8 +238,7 @@ exports.getCityDashboard = (req, res, next) => {
                   smartkeycount: smartKeyCounts,
                   averageProgressPerSmart: averageProgressPerSmartKey,
                 };
-                
-                // console.log(JSON.stringify(dataUpdate))
+
                 res.render("city/dashboard", {
                   req,
                   pageTitle: "Dashboard",
@@ -228,27 +249,27 @@ exports.getCityDashboard = (req, res, next) => {
                   valueInfo: value,
                   rounded: JSON.stringify(rounded),
                   dataRound: JSON.stringify(dataRound[0]),
-                  twoYearsLaterDate:twoYearsLaterDate,
+                  twoYearsLaterDate: twoYearsLaterDate,
                 });
                 return;
               }
-    
+
               const maxRound = Math.max(...dataProgress.map((row) => row.Round));
               const rounded = {};
-    
+
               for (let round = 1; round <= maxRound; round++) {
                 const roundData = dataProgress.filter((row) => row.Round == round);
                 const smartKeyCounts = {};
                 const projectSuccess = [];
                 const successfulProjectsData = Array(10).fill(0);
                 let unsuccessfulProjectsData = Array(10).fill(0);
-    
+
                 const validProblems = dataProgress.filter(
                   (row) => row.questionID == 5 && row.ans !== "null" && row.Round == round && row.ans !== "ไม่มีปัญหา/อุปสรรค" && row.ans !== "อื่น ๆ"
                 );
                 const totalProblems = validProblems.length;
                 const problemCounts = {};
-    
+
                 validProblems.forEach((row) => {
                   if (problemCounts[row.ans]) {
                     problemCounts[row.ans]++;
@@ -256,14 +277,14 @@ exports.getCityDashboard = (req, res, next) => {
                     problemCounts[row.ans] = 1;
                   }
                 });
-    
+
                 const problemPercentages = Object.keys(problemCounts).map((key) => {
                   return {
                     problem: key,
                     percentage: ((problemCounts[key] / totalProblems) * 100).toFixed(2),
                   };
                 });
-    
+
                 dataSmartkey.forEach((row) => {
                   if (smartKeyCounts[row.smartKey]) {
                     smartKeyCounts[row.smartKey]++;
@@ -271,23 +292,23 @@ exports.getCityDashboard = (req, res, next) => {
                     smartKeyCounts[row.smartKey] = 1;
                   }
                 });
-    
+
                 const count = Object.values(smartKeyCounts).reduce(
                   (acc, value) => acc + value,
                   0
                 );
-    
+
                 const smartKeyProgress = {};
                 const smartKeyCountsForAverage = {};
                 let totalSum = 0;
                 let totalCount = 0;
-    
+
                 roundData.forEach((item) => {
                   if (item.questionID == 2) {
                     item.ans = parseInt(item.ans, 10);
                     totalSum += item.ans;
                     totalCount += 1;
-    
+
                     if (smartKeyProgress[item.smartKey]) {
                       smartKeyProgress[item.smartKey] += item.ans;
                       smartKeyCountsForAverage[item.smartKey] += 1;
@@ -295,7 +316,7 @@ exports.getCityDashboard = (req, res, next) => {
                       smartKeyProgress[item.smartKey] = item.ans;
                       smartKeyCountsForAverage[item.smartKey] = 1;
                     }
-    
+
                     if (item.ans == 100) {
                       projectSuccess.push(item.solutionName);
                       successfulProjectsData[
@@ -304,28 +325,22 @@ exports.getCityDashboard = (req, res, next) => {
                     }
                   }
                 });
-    
+
                 const smartKeyCountsValues = Object.values(smartKeyCounts);
                 unsuccessfulProjectsData = smartKeyCountsValues.map(
                   (value, index) => value - successfulProjectsData[index]
                 );
-    
-                const averageProgressPerSmartKey = {
-                 
-                  
-                };
-    
-                Object.keys(smartKeyProgress).forEach((key) => {
-                  if(key!=='CDP'){
-                    averageProgressPerSmartKey[key] = (
 
+                const averageProgressPerSmartKey = {};
+
+                Object.keys(smartKeyProgress).forEach((key) => {
+                  if (key !== 'CDP') {
+                    averageProgressPerSmartKey[key] = (
                       smartKeyProgress[key] / smartKeyCounts[key]
                     ).toFixed(2);
-                   
                   }
-                  
                 });
-    
+
                 const totalAverage = (totalSum / count).toFixed(2);
                 rounded[round] = {
                   count: count,
@@ -337,7 +352,6 @@ exports.getCityDashboard = (req, res, next) => {
                   smartkeycount: smartKeyCounts,
                   averageProgressPerSmart: averageProgressPerSmartKey,
                 };
-                // console.log(rounded)
               }
               res.render("city/dashboard", {
                 req,
@@ -349,10 +363,10 @@ exports.getCityDashboard = (req, res, next) => {
                 valueInfo: value,
                 rounded: JSON.stringify(rounded),
                 dataRound: JSON.stringify(dataRound[0]),
-                twoYearsLaterDate:twoYearsLaterDate,
+                twoYearsLaterDate: twoYearsLaterDate,
               });
-            })
-          })
+            });
+          });
         });
       });
     });
@@ -362,50 +376,73 @@ exports.getCityDashboard = (req, res, next) => {
   }
 };
 
+
+
 exports.getCityFollow = (req, res, next) => {
   const cityID = req.session.userID;
-  const q = "SELECT * FROM solution JOIN smart ON solution.smartKey = smart.smartKey JOIN city_home ON city_home.cityID = solution.cityID WHERE solution.cityID = ? AND solution.status_solution=1 GROUP BY solution.solutionName ORDER BY solution.solutionID ASC";
-  const qRound = "SELECT * FROM citydata JOIN round ON citydata.date = round.Date WHERE citydata.cityID = ? ORDER BY round.round DESC"
+  const q = `SELECT solution.solutionID, solution.solutionName, solution.smartKey, solution.cityID, 
+                    solution.status, solution.status_solution, smart.smart, city_home.cityName
+             FROM solution 
+             JOIN smart ON solution.smartKey = smart.smartKey 
+             JOIN city_home ON city_home.cityID = solution.cityID 
+             WHERE solution.cityID = ? 
+             AND solution.status_solution=1 
+             GROUP BY solution.solutionID, solution.solutionName, solution.smartKey, solution.cityID, 
+                      solution.status, solution.status_solution, smart.smart, city_home.cityName 
+             ORDER BY solution.solutionID ASC;`;
+
+  const qRound = `SELECT * FROM citydata 
+                  JOIN round ON citydata.date = round.Date 
+                  WHERE citydata.cityID = ? 
+                  ORDER BY round.round DESC`;
+
   try {
     db.query(q, [cityID], (err, data) => {
       if (err) return res.status(500).json(err);
-      // console.log("Check follow data :",data)
-      const currenttime = new Date();
-      
+
+      // Ensure followdata is not undefined or null
       const followdata = data.map(row => {
         return {
           ...row,
           status: JSON.parse(row.status)
         };
       });
-      
-      db.query(qRound,[cityID],(err,dataRound)=>{
-        // console.log(dataRound)
-        const openForm = moment(dataRound[0].open);
-        const closeForm = moment(dataRound[0].close);
-        openForm.hours(0).minutes(0).seconds(0).milliseconds(0);
-        closeForm.hours(23).minutes(59).seconds(59).milliseconds(999);
-        
+
+      db.query(qRound, [cityID], (err, dataRound) => {
         if (err) return res.status(500).json(err);
+
+        // Handle empty or undefined dataRound
+        const roundData = dataRound[0] || {};
+        const openForm = moment(roundData.open).startOf('day');
+        const closeForm = moment(roundData.close).endOf('day');
+
         res.render("city/follow", {
           pageTitle: "Follow",
           path: "/city",
-          cityName: dataRound[0].province,
-          followdata: followdata || [],
-          dataRound:dataRound[0],
-          dateForm:{
+          cityName: roundData.province || 'Unknown',
+          followdata: followdata || [], // Default to empty array if undefined
+          dataRound: roundData,
+          dateForm: {
             openForm: openForm.toISOString(),
             closeForm: closeForm.toISOString(),
           }
         });
-      })
+      });
     });
-
   } catch (err) {
     console.log(err);
-    res.status(500).json(err)
+    res.status(500).json(err);
   }
 };
+
+
+
+
+
+
+
+
+
 
 exports.getCityUpload = (req, res, next) => {
   const cityid = req.session.userID
@@ -434,3 +471,33 @@ exports.getHistory = (req, res, next) => {
     });
   });
 }
+
+
+exports.postCloseNotification = async (req, res, next) => {
+  const { cityId } = req.body;
+  const qKpiChange = "SELECT solution.cityID,kpi.solutionID,kpi.kpiID,kpi.kpiName,kpi.kpiChange FROM kpi JOIN solution ON solution.solutionID = kpi.solutionID WHERE solution.cityID = ? AND kpi.kpiChange = 1";
+  const updateKpiChange = "UPDATE kpi JOIN solution ON solution.solutionID = kpi.solutionID SET kpi.kpiChange = 0 WHERE solution.cityID = ?";
+
+  try {
+    // Query function wrapped in a Promise
+    const query = (sql, params) => {
+      return new Promise((resolve, reject) => {
+        db.query(sql, params, (err, result) => {
+          if (err) reject(err);
+          else resolve(result);
+        });
+      });
+    };
+
+    const dataKpi = await query(qKpiChange, [cityId]);
+    if (dataKpi.length === 0) {
+      return res.status(404).json("Not Found");
+    }
+    await query(updateKpiChange, [cityId]);
+
+    res.status(200).json({ status: "Success" });
+
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+};

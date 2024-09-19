@@ -657,16 +657,14 @@ exports.getkpi = (req, res, next) => {
 exports.postkpi = (req, res, next) => {
   const data = req.body;
   const solutionID = req.params.solutionID;
-
-  console.log("req.body", data);
   if (!data || !solutionID) {
     return res.status(400).json({ message: 'ข้อมูลไม่ครบถ้วน' });
   }
 
   const deleteKpiQuery = "DELETE FROM kpi WHERE solutionID=?";
-  const insertKpiQuery = "INSERT INTO kpi (solutionID, kpiID, kpiName, goal, unit) VALUES (?, ?, ?, ?, ?)";
+  const insertKpiQuery = "INSERT INTO kpi (solutionID, kpiID, kpiName, goal, unit, kpiChange) VALUES (?, ?, ?, ?, ?, ?)";
 
-  // Delete all existing KPIs for the given solutionID
+  // ลบข้อมูล KPI ที่มีอยู่ทั้งหมดสำหรับ solutionID ที่ระบุ
   db.query(deleteKpiQuery, [solutionID], (err, deleteResult) => {
     if (err) {
       console.error("Error deleting KPIs:", err);
@@ -674,32 +672,44 @@ exports.postkpi = (req, res, next) => {
     }
 
     let kpiIndex = 1;
-
-    // Insert new KPIs
-    Object.keys(data).forEach((key) => {
+    const insertPromises = Object.keys(data).map((key) => {
       if (key.startsWith('type')) {
         const kpiSuffix = String(kpiIndex).padStart(2, '0');
         const kpiID = `${solutionID}-${kpiSuffix}`;
         const kpiName = data[`name_${key.replace('type_', '')}`];
         const unit = data[`unit_${key.replace('type_', '')}`];
         const goal = data[`goal_${key.replace('type_', '')}`] || 0;
+        const kpiChange = 1;
 
-        // Insert the new KPI
-        db.query(insertKpiQuery, [solutionID, kpiID, kpiName, goal, unit], (err, insertResult) => {
-          if (err) {
-            console.error(`Error adding KPI ${kpiID}:`, err);
-          } else {
-            console.log(`Inserted KPI ${kpiID} for solutionID ${solutionID}`);
-          }
-        });
-
+        // เพิ่มค่า kpiIndex เพื่อใช้สำหรับ KPI ตัวถัดไป
         kpiIndex++;
+
+        // คืนค่า Promise สำหรับแต่ละคำสั่ง INSERT
+        return new Promise((resolve, reject) => {
+          db.query(insertKpiQuery, [solutionID, kpiID, kpiName, goal, unit, kpiChange], (err, insertResult) => {
+            if (err) {
+              console.error(`Error adding KPI ${kpiID}:`, err);
+              reject(err);
+            } else {
+              console.log(`Inserted KPI ${kpiID} with kpiChange ${kpiChange} for solutionID ${solutionID}`);
+              resolve();
+            }
+          });
+        });
       }
     });
 
-    res.redirect(`/admin/city`);
+    // รอให้คำสั่ง INSERT ทั้งหมดเสร็จสิ้นก่อนทำการ redirect
+    Promise.all(insertPromises)
+      .then(() => {
+        res.redirect(`/admin/city`);
+      })
+      .catch((err) => {
+        res.status(500).json({ error: "Error inserting KPIs" });
+      });
   });
 };
+
 
 exports.deleteSolution = (req, res, next) => {
   // console.log(req.params);

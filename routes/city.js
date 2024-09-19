@@ -13,5 +13,8 @@ router.get('/follow', isAuth, cityController.getCityFollow); // Add isTime middl
 router.get('/upload', isAuth, cityController.getCityUpload);
 router.get('/history', isAuth, cityController.getHistory);
 
+
+router.post('/close', cityController.postCloseNotification);
+
 module.exports = router;
 
