@@ -48,6 +48,7 @@ exports.GetCity = (req, res) => {
         if (err) return res.status(500).json(err);
 
         const smartKeyCounts =  { 'ENE': 0, 'ENV': 0, 'GOV': 0, 'ECO': 0, 'LIV': 0, 'MOB': 0, 'CDP': 0,'PEO':0  };
+        let kpiChangeStatus = 0
         solutionData.forEach(row => {
           if (smartKeyCounts[row.smartKey]) {
             smartKeyCounts[row.smartKey]++;
@@ -62,10 +63,9 @@ exports.GetCity = (req, res) => {
           db.query(qKpiChange,[cityID],(err,dataKpiChange)=>{
             if (err) return res.status(500).json("error kpiChange",err)
 
-            if (dataKpiChange.length === 0) {
-              dataKpiChange[0] = 0; 
+            if (dataKpiChange.length !== 0) {
+              kpiChangeStatus = 1; 
           }
-            dataKpiChange[0] = 1;
             db.query(qProvince,[cityData[0].province,cityData[0].cityID],(err,province)=>{
               if (err) return res.status(500).json(err);
                 db.query(qRound,[cityID],(err,dataRound)=>{
@@ -115,9 +115,9 @@ exports.GetCity = (req, res) => {
                   const remainingYearStart = durationStartForm.years();
                   const remainingMonthStart = durationStartForm.months();
                   const remainingDayStart = durationStartForm.days();
-                  console.log(dataKpiChange[0])
+                  console.log(kpiChangeStatus)
                   res.render("city/city", {
-                    dataKpiChange:dataKpiChange[0],
+                    dataKpiChange:kpiChangeStatus,
                     req,
                     cityName: cityData[0].province,
                     pageTitle: cityData[0].cityname,
