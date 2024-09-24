@@ -50,13 +50,15 @@ cron.schedule('0 9 * * *', () => {
   
       const q = `
       SELECT citydata.province, 
-      city_home.cityName, 
-      COUNT(*) AS total, 
-      SUM(CASE WHEN solution.status = 0 THEN 1 ELSE 0 END) AS status_zero_count, 
-      citydata.date FROM solution 
+       city_home.cityName, 
+       COUNT(*) AS total, 
+       SUM(CASE WHEN solution.status = 0 THEN 1 ELSE 0 END) AS status_zero_count, 
+       citydata.date 
+      FROM solution 
       JOIN citydata ON citydata.cityID = solution.cityID 
       JOIN city_home ON city_home.cityID = citydata.cityID 
-      GROUP BY city_home.cityName;
+      GROUP BY citydata.province, city_home.cityName, citydata.date;
+
       `;
   
       db.query(q, (err, data) => {
