@@ -423,6 +423,7 @@
         const requiredFields = document.querySelectorAll('[name^="A"]');
         const kpiFields = document.getElementById('KPI-Containner').querySelectorAll('input');
         const status = document.getElementById('status').value;
+        let progress = document.getElementById('progress').value;
 
         if (status !== 'ยกเลิก'&&status !== 'ปรับแผน') {
             requiredFields.forEach(field => {
@@ -437,12 +438,14 @@
                     element.style.border = '';
                 }
             });
-            if(!document.getElementById('fileUpload').value.trim()){
-                isValid = false;
-                document.getElementById('fileUpload').style.border = '2px solid red';
+            if (!document.getElementById('fileUpload').value.trim()) {
+                if (progress === "100") {
+                    isValid = false;
+                    document.getElementById('fileUpload').style.border = '2px solid red';
                     if (!firstInvalidElement) {
                         firstInvalidElement = document.getElementById('fileUpload');
                     }
+                }
             }
 
             kpiFields.forEach(field => {
