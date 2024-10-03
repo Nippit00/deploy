@@ -254,18 +254,18 @@ exports.getCityDashboard = (req, res, next) => {
                 return;
               }
 
-              const maxRound = Math.max(...dataProgress.map((row) => row.Round));
+              const maxRound = Math.max(...dataProgress.map((row) => row.round));
               const rounded = {};
 
               for (let round = 1; round <= maxRound; round++) {
-                const roundData = dataProgress.filter((row) => row.Round == round);
+                const roundData = dataProgress.filter((row) => row.round == round);
                 const smartKeyCounts = {};
                 const projectSuccess = [];
                 const successfulProjectsData = Array(10).fill(0);
                 let unsuccessfulProjectsData = Array(10).fill(0);
 
                 const validProblems = dataProgress.filter(
-                  (row) => row.questionID == 5 && row.ans !== "null" && row.Round == round && row.ans !== "ไม่มีปัญหา/อุปสรรค" && row.ans !== "อื่น ๆ"
+                  (row) => row.questionID == 5 && row.ans !== "null" && row.round == round && row.ans !== "ไม่มีปัญหา/อุปสรรค" && row.ans !== "อื่น ๆ"
                 );
                 const totalProblems = validProblems.length;
                 const problemCounts = {};
