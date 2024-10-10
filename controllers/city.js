@@ -1,6 +1,9 @@
 const { json } = require("body-parser");
 const db = require("../db.js");
-const moment = require('moment'); //à¹ƒà¸Šà¹‰à¹ƒà¸™à¸à¸²à¸£à¸„à¸³à¸™à¸§à¸“à¸§à¸±à¸™à¸—à¸µà¹ˆ
+const moment = require('moment'); 
+const fs = require('fs');
+const path = require('path');
+const { format } = require('@fast-csv/format');
 
 exports.GetCity = (req, res) => {
   const cityID = req.session.userID;
@@ -115,7 +118,6 @@ exports.GetCity = (req, res) => {
                   const remainingYearStart = durationStartForm.years();
                   const remainingMonthStart = durationStartForm.months();
                   const remainingDayStart = durationStartForm.days();
-                  console.log(kpiChangeStatus)
                   res.render("city/city", {
                     dataKpiChange:kpiChangeStatus,
                     req,
@@ -261,7 +263,7 @@ exports.getCityDashboard = (req, res, next) => {
                 const roundData = dataProgress.filter((row) => row.round == round);
                 const smartKeyCounts = {};
                 const projectSuccess = [];
-                const successfulProjectsData = Array(10).fill(0);
+                let successfulProjectsData = Array(10).fill(0);
                 let unsuccessfulProjectsData = Array(10).fill(0);
 
                 const validProblems = dataProgress.filter(
@@ -309,27 +311,28 @@ exports.getCityDashboard = (req, res, next) => {
                     totalSum += item.ans;
                     totalCount += 1;
 
-                    if (smartKeyProgress[item.smartKey]) {
-                      smartKeyProgress[item.smartKey] += item.ans;
-                      smartKeyCountsForAverage[item.smartKey] += 1;
+                    if (smartKeyProgress[item.smartkey]) {
+                      smartKeyProgress[item.smartkey] += item.ans;
+                      smartKeyCountsForAverage[item.smartkey] += 1;
                     } else {
-                      smartKeyProgress[item.smartKey] = item.ans;
-                      smartKeyCountsForAverage[item.smartKey] = 1;
+                      smartKeyProgress[item.smartkey] = item.ans;
+                      smartKeyCountsForAverage[item.smartkey] = 1;
                     }
 
                     if (item.ans == 100) {
                       projectSuccess.push(item.solutionName);
                       successfulProjectsData[
-                        Object.keys(smartKeyCounts).indexOf(item.smartKey)
+                        Object.keys(smartKeyCounts).indexOf(item.smartkey)
                       ]++;
                     }
                   }
                 });
 
                 const smartKeyCountsValues = Object.values(smartKeyCounts);
-                unsuccessfulProjectsData = smartKeyCountsValues.map(
+                 unsuccessfulProjectsData = smartKeyCountsValues.map(
                   (value, index) => value - successfulProjectsData[index]
                 );
+                
 
                 const averageProgressPerSmartKey = {};
 
@@ -380,21 +383,17 @@ exports.getCityDashboard = (req, res, next) => {
 
 exports.getCityFollow = (req, res, next) => {
   const cityID = req.session.userID;
-  const q = `SELECT solution.solutionID, solution.solutionName, solution.smartKey, solution.cityID, 
-                    solution.status, solution.status_solution, smart.smart, city_home.cityName
-             FROM solution 
-             JOIN smart ON solution.smartKey = smart.smartKey 
-             JOIN city_home ON city_home.cityID = solution.cityID 
-             WHERE solution.cityID = ? 
-             AND solution.status_solution=1 
-             GROUP BY solution.solutionID, solution.solutionName, solution.smartKey, solution.cityID, 
-                      solution.status, solution.status_solution, smart.smart, city_home.cityName 
-             ORDER BY solution.solutionID ASC;`;
+  const q = `SELECT solution.solutionID, solution.solutionName, solution.smartKey, solution.cityID, solution.status, solution.status_solution, smart.smart, city_home.cityName
+            FROM solution 
+            JOIN smart ON solution.smartKey = smart.smartKey 
+            JOIN city_home ON city_home.cityID = solution.cityID 
+            WHERE solution.cityID = ? 
+            AND solution.status_solution=1 
+            GROUP BY solution.solutionID, solution.solutionName, solution.smartKey, solution.cityID, solution.status, solution.status_solution, smart.smart, city_home.cityName 
+            ORDER BY solution.solutionID ASC;
+            `;
 
-  const qRound = `SELECT * FROM citydata 
-                  JOIN round ON citydata.date = round.Date 
-                  WHERE citydata.cityID = ? 
-                  ORDER BY round.round DESC`;
+  const qRound = `SELECT * FROM citydata JOIN round ON citydata.date = round.Date WHERE citydata.cityID = ? ORDER BY round.round DESC`;
 
   try {
     db.query(q, [cityID], (err, data) => {
@@ -407,20 +406,21 @@ exports.getCityFollow = (req, res, next) => {
           status: JSON.parse(row.status)
         };
       });
+      
 
       db.query(qRound, [cityID], (err, dataRound) => {
         if (err) return res.status(500).json(err);
 
         // Handle empty or undefined dataRound
-        const roundData = dataRound[0] || {};
+        const roundData = dataRound[0] ;
         const openForm = moment(roundData.open).startOf('day');
         const closeForm = moment(roundData.close).endOf('day');
 
         res.render("city/follow", {
           pageTitle: "Follow",
           path: "/city",
-          cityName: roundData.province || 'Unknown',
-          followdata: followdata || [], // Default to empty array if undefined
+          cityName: roundData.province,
+          followdata: followdata , //
           dataRound: roundData,
           dateForm: {
             openForm: openForm.toISOString(),
@@ -454,6 +454,7 @@ exports.getCityUpload = (req, res, next) => {
       path: "/city",
       cityName: province[0].province,
       cityid:cityid,
+      csrfToken: req.csrfToken()
     });
   })
   
@@ -499,5 +500,49 @@ exports.postCloseNotification = async (req, res, next) => {
 
   } catch (err) {
     res.status(500).json({ error: err });
+  }
+};
+
+
+exports.DownloadReport = (req, res) => {
+  const cityId = req.body.cityid;
+  const q = `
+    SELECT anssolution.solutionID, anssolution.ans
+    FROM solution
+    JOIN anssolution ON solution.solutionID = anssolution.solutionID
+    WHERE solution.cityID = ?
+  `;
+
+  try {
+    db.query(q, [cityId], (err, data) => {
+      if (err) return res.status(404).json(err);
+
+      // ตั้งค่าหัวข้อมูลเพื่อดาวน์โหลดไฟล์ CSV
+      res.setHeader('Content-Disposition', `attachment; filename="report_city_${cityId}.csv"`);
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+
+      // เพิ่ม BOM เพื่อรองรับภาษาไทย
+      res.write('\uFEFF'); // เขียน BOM ลงใน response
+
+      // สร้าง stream สำหรับเขียน CSV
+      const csvStream = format({ headers: true });
+
+      // ส่ง stream CSV กลับไปที่ client โดยตรง
+      csvStream.pipe(res);
+
+      // ใส่ข้อมูลจาก query ลงใน CSV
+      data.forEach(row => {
+        csvStream.write({
+          solutionID: row.solutionID,
+          ans: row.ans
+        });
+      });
+
+      // ปิด stream
+      csvStream.end();
+    });
+  } catch (err) {
+    res.status(500).json(err);
+    console.log(err);
   }
 };

@@ -127,7 +127,6 @@ exports.saveAnsObj = (req, res, next) => {
   const round = req.params.round;
   const qUpdate = "UPDATE solution SET status = ? WHERE solutionID = ?";
   const updateProgress = "UPDATE `solution` SET `Progress`=? WHERE solutionID=?";
-  console.log("req.body :",req.body)
   // console.log("req.params :",req.params)
   if (solutionID.length > 255) {
     return res.status(400).json({ error: 'solutionID exceeds the maximum length allowed' });
@@ -178,7 +177,6 @@ exports.saveAnsObj = (req, res, next) => {
         console.error('Error checking existing data:', checkErr);
         return res.status(500).json({ error: 'Failed to check existing data' });
       }
-      console.log(checkResult.length)
       if (checkResult.length > 0) {
         handleUpdates();
       } else {
@@ -272,9 +270,7 @@ exports.saveAnsObj = (req, res, next) => {
         console.error('Error selecting status:', err);
         return res.status(500).json({ error: 'Failed to select status' });
       }
-        console.log("Status updated successfully");
         if (solutionID.includes("CDP01")) {
-          console.log("TRUE")
           res.redirect(`/formcdp1/${solutionID}/${round}?success=true`);
         } else {
           res.redirect(`/formsmart/${solutionID}/${round}?success=true`);

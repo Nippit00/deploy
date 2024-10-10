@@ -151,7 +151,7 @@
         <form action="/saveForm/<%= formdata[0].solutionID %>/<%= round %>" method="post" id="reportForm">
             <div class="mt-5" id="Q1">
                 <input type="hidden" name="Q1" value="สถานะ">
-                <label for="status" class="block font-medium mb-2 text-teal-600 text-xl">สถานะ:</label>
+                <label for="status" class="block font-medium mb-2 text-teal-600 text-xl">สถานะ:  <span class="text-red-500">*</span></label>
                 <p class="text-gray-500 mb-2">สถานะปัจจุบันของการดำเนินโครงการ</p>
                 <select id="status" name="A1" class="block w-full p-2 border rounded-md" required
                     onchange="toggleFields()">
@@ -170,7 +170,7 @@
 
             <div class="mt-5" id="Q2">
                 <input type="hidden" name="Q2" value="ความก้าวหน้าโครงการ">
-                <label for="progress" class="block text-teal-600 font-medium mb-2 text-xl">ความก้าวหน้าโครงการ:</label>
+                <label for="progress" class="block text-teal-600 font-medium mb-2 text-xl">ความก้าวหน้าโครงการ:  <span class="text-red-500">*</span></label>
                 <p class="text-gray-500 mb-2">ร้อยละของความก้าวหน้าภาพรวมในการดำเนินโครงการ</p>
                 <select id="progress" name="A2" class="block w-full p-2 border rounded-md"
                     onchange="toggleFileUpload()">
@@ -184,7 +184,7 @@
 
             <div id="fileUploadContainer" class="mt-5" style="display: none;">
                 
-                <label for="fileUpload" class="block text-teal-600 font-medium mb-2 text-xl">แนบรูปภาพ:</label>
+                <label for="fileUpload" class="block text-teal-600 font-medium mb-2 text-xl">แนบรูปภาพ:  <span class="text-red-500">*</span></label>
                 <p class="text-gray-500 mb-2">แนบภาพประกอบการดำเนินโครงการเพื่อเป็นหลักฐานแสดงความสำเร็จของโครงการ</p>
                 <input type="file" id="fileUpload"  accept="image/jpeg"
                     class="block w-full p-2 border rounded-md">
@@ -192,7 +192,7 @@
 
             <div class="mt-5" id="Q4">
                 <input type="hidden" name="Q4" value="ผลการดำเนินงาน">
-                <label for="operation" class="block text-teal-600 font-medium mb-2 text-xl">ผลการดำเนินงาน:</label>
+                <label for="operation" class="block text-teal-600 font-medium mb-2 text-xl">ผลการดำเนินงาน:  <span class="text-red-500">*</span></label>
                 <p class="text-gray-500 mb-2">ระบุผลสำเร็จหรือผลประโยชน์ที่เกิดขึ้นจากการดำเนินโครงการ</p>
                 <input type="text" id="operation" name="A4" placeholder="กรอกข้อความ...."
                     value="<%= dataOld.find(d => d.questionID == '4')?.ans ?? '' %>"
@@ -201,7 +201,7 @@
 
             <div class="mt-5" id="Q5">
                 <input type="hidden" name="Q5" value="ประเภทปัญหา">
-                <label for="problem_type" class="block text-teal-600 font-medium mb-2 text-xl">ประเภทปัญหา:</label>
+                <label for="problem_type" class="block text-teal-600 font-medium mb-2 text-xl">ประเภทปัญหา:  <span class="text-red-500">*</span></label>
                 <p class="text-gray-500 mb-2">ระบุประเภทปัญหาที่พบจากการดำเนินโครงการ</p>
                 <select id="problem_type" name="A5" class="block w-full p-2 border rounded-md">
                     <option value="" <%=(dataOld.find(d=> d.questionID == '5')?.ans ?? '') === 'null' ? 'selected' :
@@ -240,7 +240,7 @@
 
             <div class="mt-5" id="Q6">
                 <input type="hidden" name="Q6" value="ปัญหาอื่น ๆ">
-                <label for="result" class="block text-teal-600 font-medium mb-2 text-xl">ปัญหาอื่นๆ:</label>
+                <label for="result" class="block text-teal-600 font-medium mb-2 text-xl">ปัญหาอื่นๆ:  <span class="text-red-500">*</span></label>
                 <p class="text-gray-500 mb-2">ระบุปัญหาที่พบจากการดำเนินโครงการ นอกเหนือจากที่กำหนดไว้</p>
                 <input type="text" id="result" name="A6" placeholder="กรอกข้อความ...."
                     value="<%= dataOld.find(d => d.questionID == '6')?.ans ?? '' %>"
@@ -249,7 +249,7 @@
 
             <div class="mt-5" id="Q7">
                 <input type="hidden" name="Q7" value="ผลลัพธ์">
-                <label for="result" class="block text-teal-600 font-medium mb-2 text-xl">ผลลัพธ์:</label>
+                <label for="result" class="block text-teal-600 font-medium mb-2 text-xl">ผลลัพธ์:  <span class="text-red-500">*</span></label>
                 <p class="text-gray-500 mb-2">ผลที่เกิดขึ้นต่อยอดจากผลผลิต หรือผลระยะยาวซึ่งเกิดเป็นผลจุดหมายปลายทาง
                     หรือผลต่อเนื่องจากผลกระทบ</p>
                 <input type="text" id="result" name="A7" placeholder="กรอกข้อความ...."
@@ -259,7 +259,7 @@
 
             <div class="mt-5" id="Q8">
                 <input type="hidden" name="Q8" value="ปัญหา/อุปสรรค">
-                <label for="problem" class="block text-teal-600 font-medium mb-2 text-xl">ปัญหา/อุปสรรค:</label>
+                <label for="problem" class="block text-teal-600 font-medium mb-2 text-xl">ปัญหา/อุปสรรค:  <span class="text-red-500">*</span></label>
                 <p class="text-gray-500 mb-2">อธิบายรายละเอียดของปัญหาที่พบจากการดำเนินโครงการ</p>
                 <input type="text" id="problem" name="A8" placeholder="กรอกข้อความ...."
                     value="<%= dataOld.find(d => d.questionID == '8')?.ans ?? '' %>"
@@ -268,7 +268,7 @@
 
             <div class="mt-5" id="Q9">
                 <input type="hidden" name="Q9" value="แนวทางแก้ไข">
-                <label for="solution" class="block text-teal-600 font-medium mb-2 text-xl">แนวทางแก้ไข:</label>
+                <label for="solution" class="block text-teal-600 font-medium mb-2 text-xl">แนวทางแก้ไข:  <span class="text-red-500">*</span></label>
                 <p class="text-gray-500 mb-2">ระบุวิธีการแก้ไขปัญหาที่พบจากการดำเนินโครงการ</p>
                 <input type="text" id="solution" name="A9" placeholder="กรอกข้อความ...."
                     value="<%= dataOld.find(d => d.questionID == '9')?.ans ?? '' %>"
@@ -277,7 +277,7 @@
 
             <div class="mt-5" id="Q10">
                 <input type="hidden" name="Q10" value="หมายเหตุ">
-                <label for="note" class="block text-teal-600 font-medium mb-2 text-xl">หมายเหตุ:</label>
+                <label for="note" class="block text-teal-600 font-medium mb-2 text-xl">หมายเหตุ:  <span class="text-red-500">*</span></label>
                 <p class="text-gray-500 mb-2">ผลการดำเนินการอื่นๆที่ต้องการรายงาน</p>
                 <input type="text" id="note" name="A10" placeholder="กรอกข้อความ...."
                     value="<%= dataOld.find(d => d.questionID == '10')?.ans ?? '' %>"
@@ -285,7 +285,7 @@
             </div>
             <div class="mt-5" id="Q11">
                 <input type="hidden" name="Q11" value="รูปแบบการลงทุน">
-                <label for="fund" class="block text-teal-600 font-medium mb-2 text-xl">รูปแบบการลงทุน:</label>
+                <label for="fund" class="block text-teal-600 font-medium mb-2 text-xl">รูปแบบการลงทุน:  <span class="text-red-500">*</span></label>
                 <select id="fund" name="A11" class="block w-full p-2 border rounded-md">
                     <option value="" <%= (dataOld.find(d => d.questionID == '11')?.ans ?? '') === '' ? 'selected' : '' %>>ระบุการลงทุน</option>
                     <option value="รัฐบาล" <%= (dataOld.find(d => d.questionID == '11')?.ans ?? '') === 'รัฐบาล' ? 'selected' : '' %>>รัฐบาล</option>
@@ -297,7 +297,7 @@
             <div class="mt-5" id="Q12">
                 <input type="hidden" name="Q12" value="งบประมาณที่ใช้ในการดำเนินการ">
                 <label for="bubget"
-                    class="block text-teal-600 font-medium mb-2 text-xl">งบประมาณที่ใช้ในการดำเนินการ:</label>
+                    class="block text-teal-600 font-medium mb-2 text-xl">งบประมาณที่ใช้ในการดำเนินการ:  <span class="text-red-500">*</span></label>
                 <p class="text-gray-500 mb-2">ระบุงบประมาณที่เกิดขึ้นจากการดำเนินโครงการ</p>
                 <input type="text" id="bubget" name="A12" placeholder="กรอกข้อความ...."
                     value="<%= dataOld.find(d => d.questionID == '12')?.ans ?? '' %>"
@@ -309,7 +309,7 @@
                 <div class="mt-5" id="Q<%= item.questionID %>">
                     <input type="hidden" value="<%= item.question %>" name="Q<%= item.questionID %>">
                     <label for="other" class="block text-teal-600 font-medium mb-2 text-xl">
-                        <%= item.question %>:
+                        <%= item.question %>:  <span class="text-red-500">*</span>
                     </label>
                     <p class="text-gray-500 mb-2">
                         <%= item.Description %>
@@ -375,7 +375,7 @@
                         <% kpiQ.forEach(item=> { %>
                             <div class="mb-4" id="KPI<%= item.kpiID %>">
                                 <label for="<%= item.kpiID %>" class="block text-teal-600 font-medium mt-5 text-xl">
-                                    <%= item.kpiName %>: <span class="text-red-500">*</span>
+                                    <%= item.kpiName %>:  <span class="text-gray-500 text-base">(เป้าหมาย <%= item.goal %> <%= item.unit %>)</span> <span class="text-red-500">*</span>
                                 </label>
                                
                                        

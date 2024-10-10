@@ -252,12 +252,9 @@ exports.getAdCityDataP =  (req, res, next) => {
                     smartKeyCountsForAverage[item.smartKey] = 1;
                   }
                   // นับโครงการที่สำเร็จและไม่สำเร็จ
-                  if (item.ans == 100) {
-                   
+                  if (item.ans == 100) {         
                     projectSuccess.push({solutionName:item.solutionName,solutionID:item.solutionID});
-                    successfulProjectsData[Object.keys(smartKeyCounts).indexOf(item.smartKey)]++;
-
-
+                    successfulProjectsData[Object.keys(smartKeyCounts).indexOf(item.smartkey)]++;
                     }
                   }
                 }

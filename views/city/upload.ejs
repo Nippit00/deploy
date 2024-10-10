@@ -103,11 +103,18 @@
             <div class="text-lg text-center">ท่านสามารถ download ผลสรุปเบื้องต้นได้ดัง link นี้ </div>
             <br>
             <div class="text-center">
-                <span>ไฟล์แบบฟอร์มสำหรับเมืองที่ต้องการต่อตราสัญลักษณ์ครบ 2 ปี
-                    <button id="downloadButton" class="ml-4 px-4 py-2 bg-blue-500 text-white rounded-full transition duration-300 ease-in-out hover:bg-blue-600">
-                        <i class="fas fa-download"></i> download
-                    </button>
-                </span>
+                <div class="flex flex-col gap-5">
+                    <span>ไฟล์แบบฟอร์มสำหรับเมืองที่ต้องการต่อตราสัญลักษณ์ครบ 2 ปี
+                        <button id="downloadButton" class="ml-4 px-4 py-2 bg-blue-500 text-white rounded-full transition duration-300 ease-in-out hover:bg-blue-600">
+                            <i class="fas fa-download"></i> download
+                        </button>
+                    </span>
+                    <span>ข้อมูลการายงาน
+                        <button id="downloadReport" class="ml-4 px-4 py-2 bg-blue-500 text-white rounded-full transition duration-300 ease-in-out hover:bg-blue-600">
+                            <i class="fas fa-download"></i> download
+                        </button>
+                    </span>
+                </div>
             </div>
         
             <!-- Upload Form -->
@@ -193,6 +200,47 @@
                 document.getElementById('downloadLink').click();
             }
         });
+    });
+
+    document.getElementById('downloadReport').addEventListener('click', function(event) {
+        event.preventDefault();
+        const cityid = '<%=cityid%>'
+        const formData = new FormData();
+        const csrfToken = '<%=csrfToken%>'
+        formData.append('cityid', cityid);
+        fetch(`/city/downloadreport/${cityid}`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRF-TOKEN': csrfToken
+  },
+  body: JSON.stringify({
+    cityid: cityid,
+  })
+})
+.then(response => {
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.blob(); // ดึงข้อมูลเป็นไฟล์ blob (binary data)
+})
+.then(blob => {
+  // สร้าง URL object สำหรับไฟล์ที่ดาวน์โหลด
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.style.display = 'none';
+  a.href = url;
+
+  // ตั้งชื่อไฟล์สำหรับการดาวน์โหลด
+  a.download = `report_city_${cityid}.csv`;
+  document.body.appendChild(a);
+  a.click(); // คลิกปุ่มดาวน์โหลดแบบโปรแกรม
+  window.URL.revokeObjectURL(url); // ลบ URL หลังการใช้งาน
+})
+.catch(error => {
+  console.error('There was a problem with the download:', error);
+});
+
     });
 
     const uploadContainer = document.getElementById('uploadContainer');

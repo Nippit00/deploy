@@ -16,5 +16,8 @@ router.get('/history', isAuth, cityController.getHistory);
 
 router.post('/close', cityController.postCloseNotification);
 
+//DownloadReport
+router.post('/downloadreport/:cityid',isAuth, cityController.DownloadReport);
+
 module.exports = router;
 
