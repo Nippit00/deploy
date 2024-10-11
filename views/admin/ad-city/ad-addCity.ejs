@@ -20,7 +20,7 @@
     <form action="/admin/postAddCity" method="POST" class="max-w-lg mx-auto bg-white p-9 rounded-lg shadow-md">
       <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">Add New City Data Form</h2>
       <div class="mb-6">
-        <label for="cityID" class="block text-gray-700 font-bold mb-2">Cityy ID:</label>
+        <label for="cityID" class="block text-gray-700 font-bold mb-2">City ID:</label>
         <input
           type="number"
           id="cityID"
@@ -201,7 +201,7 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const successParam = urlParams.get("success");
-    if ("<%=success%>") {
+    if ("<%=success%>" === "true") {
       swal({
         title: "Success!",
         text: "Data saved successfully",
