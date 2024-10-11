@@ -201,7 +201,7 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const successParam = urlParams.get("success");
-    if ("<%=success%>" === "true") {
+    if ("<%=success%>") {
       swal({
         title: "Success!",
         text: "Data saved successfully",
