@@ -277,7 +277,7 @@
 
             <div class="mt-5" id="Q10">
                 <input type="hidden" name="Q10" value="หมายเหตุ">
-                <label for="note" class="block text-teal-600 font-medium mb-2 text-xl">หมายเหตุ:  <span class="text-red-500">*</span></label>
+                <label for="note" class="block text-teal-600 font-medium mb-2 text-xl">หมายเหตุ(ถ้ามี):  <span class="text-red-500">*</span></label>
                 <p class="text-gray-500 mb-2">ผลการดำเนินการอื่นๆที่ต้องการรายงาน</p>
                 <input type="text" id="note" name="A10" placeholder="กรอกข้อความ...."
                     value="<%= dataOld.find(d => d.questionID == '10')?.ans ?? '' %>"
@@ -428,7 +428,7 @@
         if (status !== 'ยกเลิก'&&status !== 'ปรับแผน') {
             requiredFields.forEach(field => {
                 const element = field;
-                if (element && !element.value.trim()) {
+                if (element.name !='A10'&& !element.value.trim()) {
                     isValid = false;
                     element.style.border = '2px solid red';
                     if (!firstInvalidElement) {
