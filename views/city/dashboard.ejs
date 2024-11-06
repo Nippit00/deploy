@@ -113,7 +113,7 @@
         <div ><img src="/img/banner_navpic.png" alt="logo" class="w-72"></div>
       </div>
       <div class="flex justify-between h-16 items-center">
-        <div class="text-xl mx-5">วิสัยทัศน์: โคราชเมืองน่าอยู่ ควบคู่ เทคโนโลยี ยึดวิถีพอเพียง มุ่งสู่การพัฒนาที่ยั่งยืน</div>
+        <div class="text-xl mx-5">วิสัยทัศน์:ยังไม่มี</div>
         <div class="text-xl mx-5"> ประเภท: <%= new Date() - new Date(data.date) < 6 * 30 * 24 * 60 * 60 * 1000 ? 'เมืองใหม่' : 'เมืองเก่า' %></div>
       </div>
     </div>  
@@ -123,7 +123,7 @@
           <% const initialRound=JSON.parse(rounded)[Object.keys(JSON.parse(rounded)).length]; %>
           <div class="card col-span-1 lg:ml-3">
               <h3 class="section-title">บริการเมืองอัจฉริยะ : <span style="color: #2c7f97;">
-                  <%= Object.keys(initialRound.smartkeycount).length-2 %>
+                  <%= Object.keys(initialRound.smartkeycount).length-1 %>
               </span>
               Smarts <br />จำนวนโครงการ : <span style="color: #d0a519;">
                   <%= initialRound.count-4 %>
@@ -198,9 +198,9 @@
   </div>
 
   <!-- Project Items Section -->
-  <div class="max-w-dvh mx-8 my-10 bg-gray-400 p-5 rounded-xl shadow-md border-2 border-teal-400 ">
+  <div class="max-w-dvh mx-8 my-10 bg-gray-400 p-5 rounded-xl shadow-md border-2 border-teal-400 hidden lg:block">
     <h6 class="text-white text-2xl font-bold text-center mb-5">สรุปสถานะรายงาน</h6>
-    <div class="flex-row flex flex-wrap justify-center sm:grid-cols-11 gap-4 items-center p-2 ">
+    <div class="grid grid-cols-2 sm:grid-cols-11 gap-4 items-center">
       <% const projectItems = [
           { id: 10, imgSrc: "/img/favi.png", alt: "Image 0", title: "โครงสร้างพื้นฐานกายภาพ" },
           { id: 11, imgSrc: "/img/favi.png", alt: "Image 1", title: "โครงสร้างพื้นฐานดิจิตอล" },
